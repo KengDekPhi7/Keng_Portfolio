@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https:; script-src 'self' 'unsafe-inline';">
+    <meta name="referrer" content="no-referrer">
+    <meta name="robots" content="index, follow">
+    <title>Keng's Story - Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --black: #1a1a1a;
+            --black-light: #2a2a2a;
+            --black-soft: #333333;
+            --white: #f5f0eb;
+            --white-pure: #ffffff;
+            --white-cream: #ede8e1;
+            --red: #c0392b;
+            --red-dark: #96281b;
+            --red-light: #e74c3c;
+            --red-glow: rgba(192, 57, 43, 0.3);
+            --font-th: 'Sarabun', sans-serif;
+            --font-en: 'Playfair Display', serif;
+            --page-max: 900px;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--red) var(--black);
+        }
+
+        body {
+            font-family: var(--font-th);
+            background: var(--black);
+            color: var(--white);
+            line-height: 1.8;
+            font-size: 17px;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--black); }
+        ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
+
+        /* ===== BOOK NAVIGATION (Sidebar Menu) ===== */
+        .book-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--black-light);
+            border-right: 3px solid var(--red);
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform var(--transition);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .book-nav.open {
+            transform: translateX(0);
+        }
+
+        .book-nav-header {
+            padding: 2rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--black-soft);
+        }
+
+        .book-nav-header h2 {
+            font-family: var(--font-en);
+            font-size: 1.1rem;
+            color: var(--red);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .book-nav-header p {
+            font-size: 0.8rem;
+            color: rgba(245, 240, 235, 0.5);
+            margin-top: 0.25rem;
+        }
+
+        .chapter-list {
+            list-style: none;
+            padding: 1rem 0;
+            flex: 1;
+        }
+
+        .chapter-list li {
+            position: relative;
+        }
+
+        .chapter-list a {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .chapter-list a:hover,
+        .chapter-list a.active {
+            background: rgba(192, 57, 43, 0.1);
+            border-left-color: var(--red);
+            color: var(--red-light);
+        }
+
+        .chapter-num {
+            font-family: var(--font-en);
+            font-size: 0.75rem;
+            color: var(--red);
+            min-width: 20px;
+            opacity: 0.7;
+        }
+
+        .nav-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--black-soft);
+            font-size: 0.8rem;
+            color: rgba(245, 240, 235, 0.3);
+            text-align: center;
+        }
+
+        /* Overlay */
+        .nav-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .nav-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 1001;
+            background: var(--black-light);
+            border: 1px solid var(--red);
+            color: var(--white);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.5);
+        }
+
+        .menu-toggle:hover {
+            background: var(--red);
+            transform: scale(1.1);
+        }
+
+        .menu-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--red), var(--red-light));
+            z-index: 1002;
+            transition: width 0.1s;
+        }
+
+        /* ===== PAGE / CHAPTER LAYOUT ===== */
+        .book-page {
+            max-width: var(--page-max);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .chapter {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 6rem 0 4rem;
+            position: relative;
+        }
+
+        .chapter-header {
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .chapter-header.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chapter-label {
+            font-family: var(--font-en);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-title {
+            font-family: var(--font-en);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            color: var(--white-pure);
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-subtitle {
+            font-size: 1rem;
+            color: rgba(245, 240, 235, 0.5);
+            font-style: italic;
+        }
+
+        .divider {
+            width: 60px;
+            height: 2px;
+            background: var(--red);
+            margin: 1.5rem 0;
+        }
+
+        /* ===== CONTENT BLOCKS ===== */
+        .story-text {
+            font-size: 1.05rem;
+            line-height: 2;
+            color: var(--white-cream);
+            max-width: 680px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .story-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .story-text p {
+            margin-bottom: 1.5rem;
+            text-indent: 2rem;
+        }
+
+        .story-text p:first-child::first-letter {
+            font-family: var(--font-en);
+            font-size: 3.5rem;
+            float: left;
+            line-height: 1;
+            margin-right: 0.5rem;
+            margin-top: 0.15rem;
+            color: var(--red);
+            font-weight: 700;
+        }
+
+        .highlight-quote {
+            border-left: 3px solid var(--red);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            background: rgba(192, 57, 43, 0.05);
+            font-style: italic;
+            font-size: 1.1rem;
+            color: var(--white);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .fun-note {
+            display: inline-block;
+            background: rgba(192, 57, 43, 0.15);
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            border: 1px solid rgba(192, 57, 43, 0.3);
+            color: var(--red-light);
+        }
+
+        .fun-note::before {
+            content: "* ";
+            font-weight: 700;
+        }
+
+        /* ===== COVER PAGE ===== */
+        .cover {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(192,57,43,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cover-frame {
+            border: 1px solid rgba(192, 57, 43, 0.3);
+            padding: 4rem 3rem;
+            position: relative;
+            max-width: 600px;
+        }
+
+        .cover-frame::before,
+        .cover-frame::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: var(--red);
+        }
+
+        .cover-frame::before {
+            top: -2px;
+            left: -2px;
+            border-top: 2px solid;
+            border-left: 2px solid;
+        }
+
+        .cover-frame::after {
+            bottom: -2px;
+            right: -2px;
+            border-bottom: 2px solid;
+            border-right: 2px solid;
+        }
+
+        .cover-label {
+            font-family: var(--font-en);
+            font-size: 0.7rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--red);
+            margin-bottom: 1.5rem;
+        }
+
+        .cover-title {
+            font-family: var(--font-en);
+            font-size: clamp(2.5rem, 7vw, 4rem);
+            font-weight: 700;
+            color: var(--white-pure);
+            line-height: 1.1;
+            margin-bottom: 0.75rem;
+        }
+
+        .cover-name-th {
+            font-size: 1.3rem;
+            color: var(--white-cream);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .cover-tagline {
+            font-style: italic;
+            color: rgba(245, 240, 235, 0.6);
+            font-size: 0.95rem;
+            max-width: 400px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(245, 240, 235, 0.4);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            animation: pulse 2s infinite;
+        }
+
+        .scroll-hint svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--red);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+            50% { opacity: 1; transform: translateX(-50%) translateY(5px); }
+        }
+
+        /* ===== PROFILE IMAGE ===== */
+        .profile-image-wrapper {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--red);
+            background: var(--black-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(245, 240, 235, 0.3);
+            font-size: 0.7rem;
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ===== TIMELINE ===== */
+        .timeline {
+            position: relative;
+            padding-left: 2.5rem;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--red), transparent);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.6s ease-out;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.65rem;
+            top: 0.5rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--red);
+            border: 2px solid var(--black);
+            box-shadow: 0 0 10px var(--red-glow);
+        }
+
+        .timeline-date {
+            font-family: var(--font-en);
+            font-size: 0.8rem;
+            color: var(--red);
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-role {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--white-pure);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-company {
+            font-size: 0.9rem;
+            color: rgba(245, 240, 235, 0.6);
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.92rem;
+            color: var(--white-cream);
+            line-height: 1.8;
+        }
+
+        .timeline-desc ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .timeline-desc ul li {
+            padding-left: 1.25rem;
+            position: relative;
+            margin-bottom: 0.35rem;
+        }
+
+        .timeline-desc ul li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--red);
+            font-family: var(--font-en);
+            font-weight: 700;
+        }
+
+        /* ===== SKILLS GRID ===== */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin: 2rem 0;
+        }
+
+        .skill-card {
+            background: var(--black-light);
+            border: 1px solid var(--black-soft);
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .skill-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .skill-card:hover {
+            border-color: var(--red);
+            box-shadow: 0 4px 20px rgba(192, 57, 43, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .skill-card-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-card h4 {
+            font-size: 0.95rem;
+            color: var(--white-pure);
+            margin-bottom: 0.35rem;
+        }
+
+        .skill-card p {
+            font-size: 0.8rem;
+            color: rgba(245, 240, 235, 0.5);
+            line-height: 1.5;
+        }
+
+        /* ===== MEDIA PLACEHOLDERS ===== */
+        .media-placeholder {
+            background: var(--black-light);
+            border: 2px dashed var(--black-soft);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin: 2rem 0;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .media-placeholder:hover {
+            border-color: var(--red);
+        }
+
+        .media-placeholder-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.5;
+        }
+
+        .media-placeholder-text {
+            font-size: 0.85rem;
+            color: rgba(245, 240, 235, 0.4);
+        }
+
+        .media-placeholder-label {
+            font-size: 0.7rem;
+            color: var(--red);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+        }
+
+        /* For actual images and videos */
+        .media-image {
+            width: 100%;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border: 1px solid var(--black-soft);
+        }
+
+        .media-video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--black-light);
+            border: 1px solid var(--black-soft);
+        }
+
+        .media-video-wrapper iframe,
+        .media-video-wrapper video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ===== GALLERY GRID ===== */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .gallery-item {
+            aspect-ratio: 4/3;
+            background: var(--black-light);
+            border-radius: 8px;
+            border: 2px dashed var(--black-soft);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--red);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        /* ===== CONTACT SECTION ===== */
+        .contact-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--black-light);
+            border: 1px solid var(--black-soft);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--white);
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .contact-link:hover {
+            border-color: var(--red);
+            background: rgba(192, 57, 43, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .contact-link svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--red);
+            flex-shrink: 0;
+        }
+
+        /* ===== FOOTER ===== */
+        .book-footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--black-soft);
+            margin-top: 4rem;
+        }
+
+        .book-footer p {
+            color: rgba(245, 240, 235, 0.3);
+            font-size: 0.8rem;
+        }
+
+        .footer-end {
+            font-family: var(--font-en);
+            font-size: 1.2rem;
+            color: var(--red);
+            margin-bottom: 0.5rem;
+            letter-spacing: 3px;
+        }
+
+        /* ===== PAGE TURN SEPARATOR ===== */
+        .page-turn {
+            text-align: center;
+            padding: 3rem 0;
+            position: relative;
+        }
+
+        .page-turn::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--red), transparent);
+        }
+
+        .page-turn-icon {
+            display: inline-block;
+            background: var(--black);
+            padding: 0 1rem;
+            position: relative;
+            color: var(--red);
+            font-family: var(--font-en);
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .book-page { padding: 0 1.25rem; }
+            .chapter { padding: 4rem 0 3rem; }
+            .cover-frame { padding: 2.5rem 1.5rem; }
+            .skills-grid { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: 1fr; }
+            .contact-links { flex-direction: column; }
+            .profile-image-wrapper { width: 140px; height: 140px; }
+            .menu-toggle { top: 1rem; left: 1rem; width: 42px; height: 42px; }
+            .story-text p:first-child::first-letter {
+                font-size: 2.8rem;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+
+    <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="readingProgress"></div>
+
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+    </button>
+
+    <!-- Navigation Overlay -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Book Navigation (Sidebar) -->
+    <nav class="book-nav" id="bookNav">
+        <div class="book-nav-header">
+            <h2>Table of Contents</h2>
+            <p>Keng's Story</p>
+        </div>
+        <ul class="chapter-list">
+            <li><a href="#cover"><span class="chapter-num">&mdash;</span> Cover</a></li>
+            <li><a href="#prologue"><span class="chapter-num">01</span> Prologue</a></li>
+            <li><a href="#origin"><span class="chapter-num">02</span> Origin Story</a></li>
+            <li><a href="#career"><span class="chapter-num">03</span> The Adventures</a></li>
+            <li><a href="#skills"><span class="chapter-num">04</span> Arsenal</a></li>
+            <li><a href="#gallery"><span class="chapter-num">05</span> Gallery</a></li>
+            <li><a href="#contact"><span class="chapter-num">06</span> Get In Touch</a></li>
+        </ul>
+        <div class="nav-footer">
+            &copy; 2026 Keng Playthong
+        </div>
+    </nav>
+
+    <main class="book-page">
+
+        <!-- ==================== COVER ==================== -->
+        <section class="cover" id="cover">
+            <div class="cover-frame fade-in">
+                <div class="profile-image-wrapper">
+                    <!-- TODO: ใส่รูปโปรไฟล์ของคุณ -->
+                    <div class="profile-image">
+                        <span>ใส่รูปโปรไฟล์</span>
+                    </div>
+                </div>
+                <div class="cover-label">A Portfolio Story</div>
+                <h1 class="cover-title">Keng<br>Playthong</h1>
+                <p class="cover-name-th">ธีรพันธ์ พลายทอง</p>
+                <p class="cover-tagline">
+                    จากเด็กบ้านนอกหัวหิน สู่ Product Marketing Coordinator<br>
+                    ผ่านเวทีละคร บาร์ค็อกเทล หัวหน้าแผนกขาย และอีกหลายสนามรบ<br>
+                    นี่คือเรื่องราวของผม...
+                </p>
+            </div>
+            <div class="scroll-hint">
+                <span>SCROLL TO READ</span>
+                <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h12l-6 6z"/></svg>
+            </div>
+        </section>
+
+        <!-- ==================== CHAPTER 1: PROLOGUE ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+
+        <section class="chapter" id="prologue">
+            <div class="chapter-header">
+                <div class="chapter-label">Chapter 01</div>
+                <h2 class="chapter-title">Prologue</h2>
+                <p class="chapter-subtitle">"สวัสดี ผมเก่ง"</p>
+                <div class="divider"></div>
+            </div>
+
+            <div class="story-text">
+                <p>สวัสดีครับ ผม ธีรพันธ์ พลายทอง หรือเรียกสั้นๆ ว่า "เก่ง" ก็ได้ครับ ไม่ได้เก่งจริงหรอก แต่พ่อแม่ตั้งชื่อมาแบบนี้ ก็ต้องพยายามให้สมชื่อกันหน่อย</p>
+
+                <p>ผมเป็นคนร่าเริง อารมณ์ดี ชอบช่วยเหลือผู้อื่น ชอบความท้าทาย และชอบเรียนรู้สิ่งใหม่ๆ อยู่เสมอ แก้ไขปัญหาได้ดีทั้งเฉพาะหน้าและระยะยาว ปรับตัวเข้ากับผู้คนและสถานการณ์ต่างๆ ได้เป็นอย่างดี</p>
+
+                <div class="fun-note">ถ้าชีวิตเป็นเกม ผมน่าจะเป็นตัวละครที่เลือก Multi-class ไว้ เพราะทำได้หลายอย่างจนบางทีตัวเองก็งง</div>
+
+                <p>ผมกำลังมองหางานที่ได้ใช้ความคิดสร้างสรรค์ และทักษะการสื่อสารของผม ไม่ว่าจะเป็นการทำคอนเทนต์ หรือกลยุทธ์ที่มีพลังด้วยประสบการณ์ของผม เพื่อช่วยให้แบรนด์เติบโต สร้างรอยยิ้มให้ผู้คน</p>
+            </div>
+
+            <!-- Placeholder: รูปภาพแนะนำตัว -->
+            <div class="media-placeholder">
+                <div class="media-placeholder-icon">&#128247;</div>
+                <div class="media-placeholder-text">ใส่รูปภาพแนะนำตัว หรือรูป Lifestyle ของคุณ</div>
+                <div class="media-placeholder-label">IMAGE PLACEHOLDER</div>
+            </div>
+            <!--
+                วิธีใส่รูป: แทนที่ div ด้านบนด้วย
+                <img class="media-image" src="images/intro-photo.jpg" alt="รูปแนะนำตัว" loading="lazy">
+            -->
+        </section>
+
+        <!-- ==================== CHAPTER 2: ORIGIN STORY ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+
+        <section class="chapter" id="origin">
+            <div class="chapter-header">
+                <div class="chapter-label">Chapter 02</div>
+                <h2 class="chapter-title">Origin Story</h2>
+                <p class="chapter-subtitle">"ทุกฮีโร่มีจุดเริ่มต้น (ของผมเริ่มจากเวทีละคร)"</p>
+                <div class="divider"></div>
+            </div>
+
+            <div class="story-text">
+                <p>เรื่องราวของผมเริ่มต้นที่พัทยา ตอนอายุ 16 ผมก้าวขึ้นเวทีโรงละครไทยอลังการ เป็นนักแสดงละครเวทีย้อนยุค ฟังดูเท่ไหมครับ? แต่ตอนนั้นต้องแต่งหน้าหนามาก จนแม่มาดูยังจำลูกตัวเองไม่ได้</p>
+
+                <p>แต่สิ่งที่ผมได้จากเวทีละครนั้นมีค่ามหาศาล ทั้งความกล้าแสดงออก การทำงานเป็นทีม และที่สำคัญคือ "การเล่าเรื่อง" ซึ่งเป็นทักษะที่ติดตัวผมมาจนถึงทุกวันนี้</p>
+
+                <div class="fun-note">Fun Fact: ผมเคยเล่นเป็นทหารที่ตายฉากแรก แต่ต้องนอนอยู่บนเวทีตลอดเรื่อง... นี่แหละบทเรียนแรกของคำว่า "อดทน"</div>
+            </div>
+
+            <!-- Placeholder: วิดีโอ/รูปจากสมัยเป็นนักแสดง -->
+            <div class="media-placeholder">
+                <div class="media-placeholder-icon">&#127909;</div>
+                <div class="media-placeholder-text">ใส่คลิปวิดีโอ หรือรูปภาพสมัยเป็นนักแสดง</div>
+                <div class="media-placeholder-label">VIDEO / IMAGE PLACEHOLDER</div>
+            </div>
+            <!--
+                วิธีใส่วิดีโอ YouTube:
+                <div class="media-video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                </div>
+
+                วิธีใส่วิดีโอไฟล์:
+                <div class="media-video-wrapper">
+                    <video controls preload="metadata" poster="images/video-thumb.jpg">
+                        <source src="videos/your-video.mp4" type="video/mp4">
+                    </video>
+                </div>
+            -->
+        </section>
+
+        <!-- ==================== CHAPTER 3: THE ADVENTURES ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+
+        <section class="chapter" id="career">
+            <div class="chapter-header">
+                <div class="chapter-label">Chapter 03</div>
+                <h2 class="chapter-title">The Adventures</h2>
+                <p class="chapter-subtitle">"แต่ละงานคือด่านใหม่ที่ต้องพิชิต"</p>
+                <div class="divider"></div>
+            </div>
+
+            <div class="story-text">
+                <p>หลังจากลงจากเวทีละคร ผมก็ออกผจญภัยในโลกการทำงานจริง แต่ละที่สอนบทเรียนที่ไม่มีมหาวิทยาลัยไหนสอน (จริงๆ ก็ไม่ได้เรียนมหาวิทยาลัย) แต่ประสบการณ์ชีวิตนี่แหละครับ คือมหาวิทยาลัยที่ดีที่สุดของผม</p>
+            </div>
+
+            <div class="timeline">
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Apr 2012 - Mar 2014</div>
+                    <div class="timeline-role">นักแสดงละครเวที</div>
+                    <div class="timeline-company">โรงละครไทยอลังการ, พัทยา</div>
+                    <div class="timeline-desc">
+                        <ul>
+                            <li>แสดงละครเวทีย้อนยุคตามบทบาทที่ได้รับ</li>
+                            <li>ฝึกซ้อมและพัฒนาบทบาทอย่างต่อเนื่อง</li>
+                        </ul>
+                        <div class="fun-note">จุดเริ่มต้นที่ทำให้ผมกล้าพูดหน้ากล้อง กล้ายืนหน้าคน และกล้าเล่าเรื่อง</div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Jul 2014 - Oct 2017</div>
+                    <div class="timeline-role">พนักงานเสิร์ฟ / แคชเชียร์ / บาร์เทนเดอร์</div>
+                    <div class="timeline-company">ร้านไอร่อนคลับ, พัทยา</div>
+                    <div class="timeline-desc">
+                        <ul>
+                            <li>รับออเดอร์และให้บริการลูกค้า</li>
+                            <li>คิดเงินและทำบัญชีรายจ่ายของร้าน</li>
+                            <li>ผสมเครื่องดื่มแอลกอฮอล์ให้ลูกค้า</li>
+                        </ul>
+                        <div class="fun-note">ตอนผสมค็อกเทลแรกๆ ลูกค้าเรียก "น้ำยาล้างจาน" แต่สุดท้ายก็ปรับสูตรจนเป็นเมนูขายดี!</div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 3 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Apr 2021 - Sep 2021</div>
+                    <div class="timeline-role">แอดมิน (แผนกทรัพยากรมนุษย์)</div>
+                    <div class="timeline-company">บริษัท โดลไทยแลนด์ จำกัด, โรงงานหัวหิน</div>
+                    <div class="timeline-desc">
+                        <ul>
+                            <li>จัดเรียงเอกสาร คัดแยกประเภทเอกสารของพนักงาน</li>
+                            <li>คีย์ข้อมูลพนักงานลงในระบบ</li>
+                        </ul>
+                        <div class="fun-note">ได้เรียนรู้ว่าการจัดระเบียบเอกสารก็เหมือนจัดระเบียบชีวิต ถ้าไม่เริ่มตอนนี้ มันจะพังในภายหลัง</div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 4 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Oct 2021 - Nov 2022</div>
+                    <div class="timeline-role">พนักงานทั่วไป</div>
+                    <div class="timeline-company">โกเพาเวอร์, สาขาหัวหิน</div>
+                    <div class="timeline-desc">
+                        <ul>
+                            <li>ขายสินค้าเครื่องใช้ไฟฟ้าภายในบ้าน อุปกรณ์ IT</li>
+                            <li>บริการลูกค้า (แคชเชียร์, ออกใบกำกับภาษี)</li>
+                            <li>ดูแลเอกสารต่างๆ และตรวจรับสินค้า</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 5 (Main) -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Dec 2022 - Jul 2025</div>
+                    <div class="timeline-role">หัวหน้าแผนกการขาย</div>
+                    <div class="timeline-company">เพาเวอร์บาย, สาขาชิดลม & เซ็นทรัลพระราม 9</div>
+                    <div class="timeline-desc">
+                        <ul>
+                            <li>ดูแลและบริหารตารางการทำงานของพนักงาน</li>
+                            <li>บริหารยอดขายและกำไร 8-20 ล้านบาท/เดือน</li>
+                            <li>วิเคราะห์และรายงานยอดขาย สินค้าที่ขายดี-ขายไม่ดี</li>
+                            <li>ควบคุมสต็อคสินค้าไม่ให้ตกรุ่น</li>
+                            <li>ให้บริการและแก้ไขปัญหาให้ลูกค้าและพนักงาน</li>
+                            <li>รับข้อร้องเรียนและปรับปรุงการบริการ</li>
+                            <li>ประสานงานข้ามแผนกทั้งภายในและภายนอกองค์กร</li>
+                        </ul>
+                        <div class="fun-note">บริหารยอดเดือนละ 8-20 ล้าน แต่เงินเดือนตัวเองยังต้องวางแผนใช้อย่างประหยัด... นี่แหละชีวิตมนุษย์เงินเดือน</div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 6 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Aug 2024 - Present</div>
+                    <div class="timeline-role">Content Creator / Video Editor / Graphic Designer</div>
+                    <div class="timeline-company">รับจ้างอิสระ (งานรับเอเจนซี)</div>
+                    <div class="timeline-desc">
+                        <ul>
+                            <li>คิดคอนเทนต์ให้ตรงกับบรีฟของลูกค้า</li>
+                            <li>ทำโปรดักชั่นทั้งหมด: ตั้งกลุ่มเป้าหมาย วางบรีฟ เขียนสตอรี่บอร์ด ถ่ายภาพ ถ่ายวิดีโอ ตัดต่อ ทำกราฟฟิค</li>
+                        </ul>
+                        <div class="fun-note">ทำคนเดียวทุกตำแหน่ง = One Man Army (แต่บางทีก็อยากมีทีมบ้างนะ)</div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 7 (Current) -->
+                <div class="timeline-item">
+                    <div class="timeline-date">Present</div>
+                    <div class="timeline-role">Product Marketing Coordinator</div>
+                    <div class="timeline-company">ตำแหน่งปัจจุบัน</div>
+                    <div class="timeline-desc">
+                        <ul>
+                            <li>ติดต่อประสานงานกับ Partner และหาสินค้าใหม่ๆ เข้ามาในพอร์ต</li>
+                            <li>ดูแลสินค้าหลัก: Software & Plug-ins</li>
+                            <li>ทำ Report วิเคราะห์ข้อมูลยอดขาย ยอดสั่งซื้อ</li>
+                            <li>Forecast สินค้า ตั้งราคาขาย หาช่องทางการขาย</li>
+                            <li>วางแผนและดำเนินการด้าน Marketing</li>
+                        </ul>
+                        <div class="fun-note">จาก "ขายของหน้าร้าน" สู่ "วางกลยุทธ์สินค้าระดับ Software" เส้นทางนี้ไม่มีใครเขียนบทให้ ผมเขียนเอง!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Placeholder: รูป/วิดีโอจากการทำงาน -->
+            <div class="media-placeholder">
+                <div class="media-placeholder-icon">&#128248;</div>
+                <div class="media-placeholder-text">ใส่รูปภาพหรือคลิปจากการทำงานตำแหน่งต่างๆ</div>
+                <div class="media-placeholder-label">WORK GALLERY PLACEHOLDER</div>
+            </div>
+        </section>
+
+        <!-- ==================== CHAPTER 4: SKILLS / ARSENAL ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+
+        <section class="chapter" id="skills">
+            <div class="chapter-header">
+                <div class="chapter-label">Chapter 04</div>
+                <h2 class="chapter-title">Arsenal</h2>
+                <p class="chapter-subtitle">"อาวุธประจำกายที่สะสมมาตลอดชีวิต"</p>
+                <div class="divider"></div>
+            </div>
+
+            <div class="story-text">
+                <p>ผมเชื่อว่าทักษะที่ดีที่สุดไม่ได้มาจากห้องเรียน แต่มาจากสนามจริง ทุกงานที่ผ่านมาให้อาวุธผมคนละชิ้น จนวันนี้ผมมีคลังอาวุธที่พร้อมใช้งานในทุกสถานการณ์</p>
+            </div>
+
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#127908;</div>
+                    <h4>Content Creation</h4>
+                    <p>คิด เขียน ถ่าย ตัดต่อ ครบจบในคนเดียว</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#127916;</div>
+                    <h4>Video Editing (CapCut)</h4>
+                    <p>ตัดต่อวิดีโอให้โดนใจ ตรงบรีฟ</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#127912;</div>
+                    <h4>Graphic Design (Canva)</h4>
+                    <p>ออกแบบกราฟฟิคสวยงาม ดึงดูดสายตา</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#128200;</div>
+                    <h4>Data Analysis & Power BI</h4>
+                    <p>วิเคราะห์ข้อมูลยอดขาย แปลงตัวเลขเป็นกลยุทธ์</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#128188;</div>
+                    <h4>Sales & Management</h4>
+                    <p>การปิดการขาย บริหารทีม บริหารยอด 8-20 ล้าน/เดือน</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#128187;</div>
+                    <h4>Microsoft Office</h4>
+                    <p>ใช้งานได้คล่องทุกโปรแกรมในชุด Office</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#129302;</div>
+                    <h4>AI & Vibe Coding</h4>
+                    <p>ใช้ AI ต่างๆ เพิ่มประสิทธิภาพ รวมถึง Vibe Coding สร้างโปรเจกต์ด้วย AI</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#127911;</div>
+                    <h4>Presentation & Storytelling</h4>
+                    <p>ทำสไลด์และนำเสนอได้ เล่าเรื่องให้คนฟัง</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#128736;</div>
+                    <h4>ERP System</h4>
+                    <p>ดูแลและใช้งานระบบ ERP ในการบริหารจัดการองค์กร</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#127926;</div>
+                    <h4>DAW & Music Production</h4>
+                    <p>ใช้โปรแกรม DAW ผลิตเพลงและจัดการเสียง</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#128202;</div>
+                    <h4>Product Marketing</h4>
+                    <p>Forecast สินค้า ตั้งราคา วิเคราะห์ตลาด หาช่องทางขาย</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-card-icon">&#127860;</div>
+                    <h4>Cooking & Recipe Dev</h4>
+                    <p>ทำอาหาร คิดค้นสูตรอาหาร (ทักษะลับที่ได้ใจทุกคน)</p>
+                </div>
+            </div>
+
+            <div class="highlight-quote">
+                "ภาษาไทย ระดับดีมาก (ทั้งพูด อ่าน เขียน) / ภาษาอังกฤษ ระดับพอสื่อสารได้ (กำลังพัฒนา!)"
+            </div>
+        </section>
+
+        <!-- ==================== CHAPTER 5: GALLERY ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+
+        <section class="chapter" id="gallery">
+            <div class="chapter-header">
+                <div class="chapter-label">Chapter 05</div>
+                <h2 class="chapter-title">Gallery</h2>
+                <p class="chapter-subtitle">"รูปภาพและผลงานที่ภูมิใจ"</p>
+                <div class="divider"></div>
+            </div>
+
+            <div class="story-text">
+                <p>นี่คือรวมผลงานและช่วงเวลาที่น่าจดจำของผม ทั้งงานคอนเทนต์ ชีวิตการทำงาน และโมเมนต์ที่ทำให้ผมเป็นผมในทุกวันนี้</p>
+            </div>
+
+            <!-- Gallery Grid with Placeholders -->
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 1</span>
+                </div>
+                <div class="gallery-item">
+                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 2</span>
+                </div>
+                <div class="gallery-item">
+                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 3</span>
+                </div>
+                <div class="gallery-item">
+                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 4</span>
+                </div>
+                <div class="gallery-item">
+                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 5</span>
+                </div>
+                <div class="gallery-item">
+                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 6</span>
+                </div>
+            </div>
+            <!--
+                วิธีใส่รูปใน Gallery:
+                <div class="gallery-item">
+                    <img src="images/work-01.jpg" alt="ผลงาน 1" loading="lazy">
+                </div>
+            -->
+
+            <!-- Placeholder: วิดีโอ Showreel -->
+            <div class="media-placeholder">
+                <div class="media-placeholder-icon">&#127916;</div>
+                <div class="media-placeholder-text">ใส่ Showreel หรือคลิปรวมผลงานของคุณ</div>
+                <div class="media-placeholder-label">VIDEO SHOWREEL PLACEHOLDER</div>
+            </div>
+            <!--
+                วิธีใส่วิดีโอ:
+                <div class="media-video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                </div>
+            -->
+        </section>
+
+        <!-- ==================== CHAPTER 6: CONTACT ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+
+        <section class="chapter" id="contact">
+            <div class="chapter-header">
+                <div class="chapter-label">Chapter 06</div>
+                <h2 class="chapter-title">Get In Touch</h2>
+                <p class="chapter-subtitle">"ถ้าเรื่องราวของผมทำให้คุณสนใจ มาคุยกันได้เลยครับ"</p>
+                <div class="divider"></div>
+            </div>
+
+            <div class="story-text">
+                <p>ผมพร้อมที่จะเรียนรู้และเติบโตในทีมที่มีความสนุกสนาน มีเป้าหมายเดียวกัน และกล้าคิดกล้าทำสิ่งใหม่ๆ ไปด้วยกัน ถ้าคุณกำลังมองหาคนที่มีพลัง สร้างสรรค์ และไม่กลัวความท้าทาย ผมอยู่ตรงนี้ครับ</p>
+            </div>
+
+            <div class="contact-links">
+                <a href="tel:0800069169" class="contact-link">
+                    <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 01.97-.27c1.08.35 2.24.54 3.43.54.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.07 21 3 13.93 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.19.19 2.35.54 3.43a1 1 0 01-.27.97l-2.15 2.39z"/></svg>
+                    080-006-9169
+                </a>
+                <a href="mailto:kengdekphi7@gmail.com" class="contact-link">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    kengdekphi7@gmail.com
+                </a>
+                <!-- TODO: เพิ่มลิงก์ Social Media อื่นๆ -->
+                <!--
+                <a href="https://www.facebook.com/YOUR_PROFILE" class="contact-link" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3V2z"/></svg>
+                    Facebook
+                </a>
+                <a href="https://line.me/ti/p/YOUR_LINE_ID" class="contact-link" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.89 2 10.54c0 3.45 2.61 6.43 6.37 7.56.24.06.57.17.65.39.08.2.05.5.02.7l-.1.61c-.03.18-.14.72.63.39s7.18-4.23 9.8-7.24C21.45 14.2 22 12.41 22 10.54 22 5.89 17.52 2 12 2z"/></svg>
+                    LINE
+                </a>
+                -->
+            </div>
+
+            <div class="highlight-quote">
+                "ผมเชื่อว่าจุดเริ่มต้นที่ดี คือการได้คุยกัน<br>ไม่ว่าจะเป็นเรื่องงาน เรื่องไอเดีย หรือแค่อยากแลกเปลี่ยนมุมมอง<br>ผมยินดีเสมอครับ"
+            </div>
+        </section>
+
+        <!-- ==================== FOOTER ==================== -->
+        <footer class="book-footer">
+            <div class="footer-end">&#8212; THE END &#8212;</div>
+            <p>...or maybe it's just the beginning of a new chapter.</p>
+            <p style="margin-top: 1rem;">&copy; 2026 Keng Playthong. All rights reserved.</p>
+        </footer>
+
+    </main>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // === Menu Toggle ===
+            const menuToggle = document.getElementById('menuToggle');
+            const bookNav = document.getElementById('bookNav');
+            const navOverlay = document.getElementById('navOverlay');
+
+            function openMenu() {
+                bookNav.classList.add('open');
+                navOverlay.classList.add('show');
+            }
+
+            function closeMenu() {
+                bookNav.classList.remove('open');
+                navOverlay.classList.remove('show');
+            }
+
+            menuToggle.addEventListener('click', function() {
+                if (bookNav.classList.contains('open')) {
+                    closeMenu();
+                } else {
+                    openMenu();
+                }
+            });
+
+            navOverlay.addEventListener('click', closeMenu);
+
+            // Close menu on nav link click
+            document.querySelectorAll('.chapter-list a').forEach(function(link) {
+                link.addEventListener('click', closeMenu);
+            });
+
+            // === Reading Progress Bar ===
+            const progressBar = document.getElementById('readingProgress');
+
+            function updateProgress() {
+                var scrollTop = window.scrollY;
+                var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+                progressBar.style.width = progress + '%';
+            }
+
+            // === Scroll Animations (Intersection Observer) ===
+            var animTargets = document.querySelectorAll('.chapter-header, .story-text, .timeline-item, .skill-card');
+
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.15,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            animTargets.forEach(function(el) {
+                observer.observe(el);
+            });
+
+            // === Active Nav Link Highlighting ===
+            var sections = document.querySelectorAll('section[id]');
+            var navLinks = document.querySelectorAll('.chapter-list a');
+
+            function updateActiveNav() {
+                var scrollPos = window.scrollY + window.innerHeight / 3;
+
+                sections.forEach(function(section) {
+                    var top = section.offsetTop;
+                    var height = section.offsetHeight;
+                    var id = section.getAttribute('id');
+
+                    if (scrollPos >= top && scrollPos < top + height) {
+                        navLinks.forEach(function(link) {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === '#' + id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Throttled scroll handler
+            var ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    requestAnimationFrame(function() {
+                        updateProgress();
+                        updateActiveNav();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            // Initial calls
+            updateProgress();
+            updateActiveNav();
+
+            // === Keyboard Navigation ===
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeMenu();
+            });
+        })();
+    </script>
+</body>
+</html>
