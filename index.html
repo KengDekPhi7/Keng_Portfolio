@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https:; script-src 'self' 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' https:; frame-src https://player.vimeo.com; script-src 'self' 'unsafe-inline' https://player.vimeo.com;">
     <meta name="referrer" content="no-referrer">
     <meta name="robots" content="index, follow">
     <title>Keng's Story - Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         /* ===== RESET & BASE ===== */
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,21 +23,18 @@
             --white: #f5f0eb;
             --white-pure: #ffffff;
             --white-cream: #ede8e1;
-            --red: #c0392b;
-            --red-dark: #96281b;
-            --red-light: #e74c3c;
-            --red-glow: rgba(192, 57, 43, 0.3);
-            --font-th: 'Sarabun', sans-serif;
+            --red: #e74c3c;
+            --red-dark: #c0392b;
+            --red-light: #ff6b6b;
+            --red-glow: rgba(231, 76, 60, 0.35);
+            --accent: #ff8a65;
+            --font-th: 'Noto Sans Thai', sans-serif;
             --font-en: 'Playfair Display', serif;
             --page-max: 900px;
             --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        html {
-            scroll-behavior: smooth;
-            scrollbar-width: thin;
-            scrollbar-color: var(--red) var(--black);
-        }
+        html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--red) var(--black); }
 
         body {
             font-family: var(--font-th);
@@ -52,12 +49,11 @@
         ::-webkit-scrollbar-track { background: var(--black); }
         ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 3px; }
 
-        /* ===== BOOK NAVIGATION (Sidebar Menu) ===== */
+        /* ===== BOOK NAVIGATION (Sidebar) ===== */
         .book-nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 280px;
+            top: 0; left: 0;
+            width: 300px;
             height: 100vh;
             background: var(--black-light);
             border-right: 3px solid var(--red);
@@ -69,38 +65,51 @@
             overflow-y: auto;
         }
 
-        .book-nav.open {
-            transform: translateX(0);
-        }
+        .book-nav.open { transform: translateX(0); }
 
         .book-nav-header {
-            padding: 2rem 1.5rem 1rem;
+            padding: 1.5rem 1.5rem 1rem;
             border-bottom: 1px solid var(--black-soft);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .book-nav-header h2 {
-            font-family: var(--font-en);
-            font-size: 1.1rem;
+        .book-nav-header-text h2 {
+            font-family: var(--font-th);
+            font-size: 1rem;
+            font-weight: 600;
             color: var(--red);
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .book-nav-header p {
-            font-size: 0.8rem;
+        .book-nav-header-text p {
+            font-size: 0.75rem;
             color: rgba(245, 240, 235, 0.5);
-            margin-top: 0.25rem;
+            margin-top: 0.15rem;
         }
 
-        .chapter-list {
-            list-style: none;
-            padding: 1rem 0;
-            flex: 1;
+        .nav-close-btn {
+            background: none;
+            border: 1px solid var(--black-soft);
+            color: var(--white);
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
 
-        .chapter-list li {
-            position: relative;
+        .nav-close-btn:hover {
+            background: var(--red);
+            border-color: var(--red);
         }
+
+        .chapter-list { list-style: none; padding: 1rem 0; flex: 1; }
 
         .chapter-list a {
             display: flex;
@@ -116,7 +125,7 @@
 
         .chapter-list a:hover,
         .chapter-list a.active {
-            background: rgba(192, 57, 43, 0.1);
+            background: rgba(231, 76, 60, 0.1);
             border-left-color: var(--red);
             color: var(--red-light);
         }
@@ -137,66 +146,88 @@
             text-align: center;
         }
 
-        /* Overlay */
         .nav-overlay {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: rgba(0, 0, 0, 0.6);
             z-index: 999;
-            opacity: 0;
-            visibility: hidden;
+            opacity: 0; visibility: hidden;
             transition: all 0.3s;
         }
 
-        .nav-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
+        .nav-overlay.show { opacity: 1; visibility: visible; }
 
-        /* Menu Toggle Button */
+        /* Menu Toggle - positioned so it doesn't overlap sidebar content */
         .menu-toggle {
             position: fixed;
-            top: 1.5rem;
-            left: 1.5rem;
+            top: 1.25rem; left: 1.25rem;
             z-index: 1001;
             background: var(--black-light);
-            border: 1px solid var(--red);
+            border: 2px solid var(--red);
             color: var(--white);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
+            width: 50px; height: 50px;
+            border-radius: 14px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         .menu-toggle:hover {
             background: var(--red);
-            transform: scale(1.1);
+            transform: scale(1.08) rotate(-3deg);
+            box-shadow: 0 4px 25px var(--red-glow);
         }
 
-        .menu-toggle svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
+        .menu-toggle svg { width: 22px; height: 22px; fill: currentColor; }
 
-        /* ===== PROGRESS BAR ===== */
-        .reading-progress {
+        /* Hide the floating button when sidebar is open */
+        .menu-toggle.hidden { opacity: 0; pointer-events: none; transform: scale(0.8); }
+
+        /* ===== TOP BAR (Language + Menu) ===== */
+        .top-bar {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--red), var(--red-light));
+            top: 1.25rem; right: 1.25rem;
+            z-index: 1001;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .lang-toggle {
+            background: var(--black-light);
+            border: 2px solid var(--black-soft);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: var(--font-th);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .lang-toggle:hover {
+            border-color: var(--red);
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .lang-toggle .flag { font-size: 1rem; }
+
+        /* ===== READING PROGRESS ===== */
+        .reading-progress {
+            position: fixed; top: 0; left: 0;
+            width: 0%; height: 3px;
+            background: linear-gradient(90deg, var(--red), var(--accent), var(--red-light));
             z-index: 1002;
             transition: width 0.1s;
         }
 
-        /* ===== PAGE / CHAPTER LAYOUT ===== */
+        /* ===== PAGE LAYOUT ===== */
         .book-page {
             max-width: var(--page-max);
             margin: 0 auto;
@@ -209,28 +240,23 @@
             flex-direction: column;
             justify-content: center;
             padding: 6rem 0 4rem;
-            position: relative;
         }
 
         .chapter-header {
             margin-bottom: 2.5rem;
-            opacity: 0;
-            transform: translateY(30px);
+            opacity: 0; transform: translateY(30px);
             transition: all 0.8s ease-out;
         }
 
-        .chapter-header.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .chapter-header.visible { opacity: 1; transform: translateY(0); }
 
         .chapter-label {
-            font-family: var(--font-en);
             font-size: 0.8rem;
             letter-spacing: 4px;
             text-transform: uppercase;
             color: var(--red);
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .chapter-title {
@@ -249,32 +275,25 @@
         }
 
         .divider {
-            width: 60px;
-            height: 2px;
-            background: var(--red);
+            width: 60px; height: 3px;
+            background: linear-gradient(90deg, var(--red), var(--accent));
             margin: 1.5rem 0;
+            border-radius: 2px;
         }
 
-        /* ===== CONTENT BLOCKS ===== */
+        /* ===== STORY TEXT ===== */
         .story-text {
             font-size: 1.05rem;
             line-height: 2;
             color: var(--white-cream);
             max-width: 680px;
-            opacity: 0;
-            transform: translateY(20px);
+            opacity: 0; transform: translateY(20px);
             transition: all 0.6s ease-out;
         }
 
-        .story-text.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .story-text.visible { opacity: 1; transform: translateY(0); }
 
-        .story-text p {
-            margin-bottom: 1.5rem;
-            text-indent: 2rem;
-        }
+        .story-text p { margin-bottom: 1.5rem; text-indent: 2rem; }
 
         .story-text p:first-child::first-letter {
             font-family: var(--font-en);
@@ -291,27 +310,39 @@
             border-left: 3px solid var(--red);
             padding: 1.5rem 2rem;
             margin: 2rem 0;
-            background: rgba(192, 57, 43, 0.05);
+            background: rgba(231, 76, 60, 0.06);
             font-style: italic;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             color: var(--white);
-            border-radius: 0 4px 4px 0;
+            border-radius: 0 8px 8px 0;
         }
 
+        /* ===== FUN NOTE (Playful!) ===== */
         .fun-note {
-            display: inline-block;
-            background: rgba(192, 57, 43, 0.15);
-            padding: 0.75rem 1.25rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin: 1rem 0;
-            border: 1px solid rgba(192, 57, 43, 0.3);
-            color: var(--red-light);
+            display: block;
+            background: linear-gradient(135deg, rgba(231,76,60,0.12), rgba(255,138,101,0.08));
+            padding: 1rem 1.25rem 1rem 3.2rem;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            margin: 1.25rem 0;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            color: var(--white-cream);
+            position: relative;
+            line-height: 1.7;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .fun-note:hover {
+            transform: translateX(4px);
+            box-shadow: -4px 0 15px rgba(231, 76, 60, 0.15);
         }
 
         .fun-note::before {
-            content: "* ";
-            font-weight: 700;
+            content: attr(data-emoji);
+            position: absolute;
+            left: 0.9rem;
+            top: 0.85rem;
+            font-size: 1.3rem;
         }
 
         /* ===== COVER PAGE ===== */
@@ -328,48 +359,51 @@
 
         .cover::before {
             content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at center, rgba(192,57,43,0.08) 0%, transparent 70%);
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, rgba(231,76,60,0.06) 0%, transparent 70%);
             pointer-events: none;
         }
 
+        /* Floating decorative elements */
+        .cover-deco {
+            position: absolute;
+            opacity: 0.06;
+            font-size: 4rem;
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .cover-deco:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+        .cover-deco:nth-child(2) { top: 25%; right: 12%; animation-delay: 1.5s; font-size: 3rem; }
+        .cover-deco:nth-child(3) { bottom: 20%; left: 8%; animation-delay: 3s; font-size: 3.5rem; }
+        .cover-deco:nth-child(4) { bottom: 30%; right: 10%; animation-delay: 4.5s; font-size: 2.5rem; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
         .cover-frame {
-            border: 1px solid rgba(192, 57, 43, 0.3);
-            padding: 4rem 3rem;
+            border: 1px solid rgba(231, 76, 60, 0.25);
+            padding: 3.5rem 3rem;
             position: relative;
             max-width: 600px;
+            border-radius: 16px;
+            background: rgba(26, 26, 26, 0.5);
+            backdrop-filter: blur(10px);
         }
 
-        .cover-frame::before,
-        .cover-frame::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border-color: var(--red);
-        }
-
-        .cover-frame::before {
-            top: -2px;
-            left: -2px;
-            border-top: 2px solid;
-            border-left: 2px solid;
-        }
-
-        .cover-frame::after {
-            bottom: -2px;
-            right: -2px;
-            border-bottom: 2px solid;
-            border-right: 2px solid;
-        }
-
-        .cover-label {
-            font-family: var(--font-en);
+        .cover-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--red), var(--accent));
+            color: var(--white-pure);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
             font-size: 0.7rem;
-            letter-spacing: 6px;
+            font-weight: 600;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--red);
             margin-bottom: 1.5rem;
         }
 
@@ -379,29 +413,32 @@
             font-weight: 700;
             color: var(--white-pure);
             line-height: 1.1;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
         .cover-name-th {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: var(--white-cream);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             font-weight: 300;
         }
 
         .cover-tagline {
-            font-style: italic;
             color: rgba(245, 240, 235, 0.6);
             font-size: 0.95rem;
-            max-width: 400px;
+            max-width: 420px;
             margin: 0 auto 2rem;
-            line-height: 1.6;
+            line-height: 1.7;
+        }
+
+        .cover-tagline .highlight {
+            color: var(--red-light);
+            font-weight: 500;
         }
 
         .scroll-hint {
             position: absolute;
-            bottom: 3rem;
-            left: 50%;
+            bottom: 2.5rem; left: 50%;
             transform: translateX(-50%);
             display: flex;
             flex-direction: column;
@@ -410,45 +447,51 @@
             color: rgba(245, 240, 235, 0.4);
             font-size: 0.75rem;
             letter-spacing: 2px;
-            animation: pulse 2s infinite;
+            animation: bounce 2s infinite;
         }
 
-        .scroll-hint svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--red);
-        }
+        .scroll-hint svg { width: 20px; height: 20px; fill: var(--red); }
 
-        @keyframes pulse {
+        @keyframes bounce {
             0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
-            50% { opacity: 1; transform: translateX(-50%) translateY(5px); }
+            50% { opacity: 1; transform: translateX(-50%) translateY(8px); }
         }
 
         /* ===== PROFILE IMAGE ===== */
         .profile-image-wrapper {
-            width: 180px;
-            height: 180px;
+            width: 160px; height: 160px;
             margin: 0 auto 1.5rem;
             position: relative;
         }
 
+        .profile-image-wrapper::after {
+            content: '';
+            position: absolute; inset: -6px;
+            border-radius: 50%;
+            background: conic-gradient(var(--red), var(--accent), var(--red-light), var(--red));
+            z-index: -1;
+            animation: spin 8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .profile-image {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid var(--red);
+            border: 4px solid var(--black);
             background: var(--black-soft);
             display: flex;
             align-items: center;
             justify-content: center;
             color: rgba(245, 240, 235, 0.3);
             font-size: 0.7rem;
+            position: relative;
+            z-index: 1;
         }
 
         .profile-image img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -463,49 +506,47 @@
         .timeline::before {
             content: '';
             position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
+            left: 0; top: 0; bottom: 0;
             width: 2px;
-            background: linear-gradient(to bottom, var(--red), transparent);
+            background: linear-gradient(to bottom, var(--red), var(--accent), transparent);
         }
 
         .timeline-item {
             position: relative;
             margin-bottom: 3rem;
-            opacity: 0;
-            transform: translateX(-20px);
+            opacity: 0; transform: translateX(-20px);
             transition: all 0.6s ease-out;
         }
 
-        .timeline-item.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        .timeline-item.visible { opacity: 1; transform: translateX(0); }
 
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -2.65rem;
-            top: 0.5rem;
-            width: 10px;
-            height: 10px;
+            left: -2.65rem; top: 0.5rem;
+            width: 12px; height: 12px;
             border-radius: 50%;
             background: var(--red);
-            border: 2px solid var(--black);
-            box-shadow: 0 0 10px var(--red-glow);
+            border: 3px solid var(--black);
+            box-shadow: 0 0 12px var(--red-glow);
+        }
+
+        .timeline-item:last-child::before {
+            background: var(--accent);
+            box-shadow: 0 0 15px rgba(255, 138, 101, 0.5);
+            width: 14px; height: 14px;
         }
 
         .timeline-date {
-            font-family: var(--font-en);
             font-size: 0.8rem;
             color: var(--red);
             letter-spacing: 1px;
             margin-bottom: 0.25rem;
+            font-weight: 500;
         }
 
         .timeline-role {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 600;
             color: var(--white-pure);
             margin-bottom: 0.25rem;
@@ -513,146 +554,132 @@
 
         .timeline-company {
             font-size: 0.9rem;
-            color: rgba(245, 240, 235, 0.6);
+            color: rgba(245, 240, 235, 0.5);
             margin-bottom: 0.75rem;
         }
 
-        .timeline-desc {
-            font-size: 0.92rem;
-            color: var(--white-cream);
-            line-height: 1.8;
-        }
+        .timeline-desc { font-size: 0.92rem; color: var(--white-cream); line-height: 1.8; }
 
-        .timeline-desc ul {
-            list-style: none;
-            padding: 0;
-        }
+        .timeline-desc ul { list-style: none; padding: 0; }
 
         .timeline-desc ul li {
-            padding-left: 1.25rem;
+            padding-left: 1.5rem;
             position: relative;
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.4rem;
         }
 
         .timeline-desc ul li::before {
             content: '>';
-            position: absolute;
-            left: 0;
+            position: absolute; left: 0;
             color: var(--red);
-            font-family: var(--font-en);
             font-weight: 700;
+        }
+
+        /* ===== CURRENT JOB BADGE ===== */
+        .current-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--red), var(--accent));
+            color: white;
+            padding: 0.15rem 0.65rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px var(--red-glow); }
+            to { box-shadow: 0 0 15px var(--red-glow); }
         }
 
         /* ===== SKILLS GRID ===== */
         .skills-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.25rem;
+            gap: 1rem;
             margin: 2rem 0;
         }
 
         .skill-card {
             background: var(--black-light);
             border: 1px solid var(--black-soft);
-            border-radius: 8px;
+            border-radius: 14px;
             padding: 1.25rem;
             transition: all 0.3s;
-            opacity: 0;
-            transform: translateY(20px);
+            opacity: 0; transform: translateY(20px);
+            position: relative;
+            overflow: hidden;
         }
 
-        .skill-card.visible {
-            opacity: 1;
-            transform: translateY(0);
+        .skill-card.visible { opacity: 1; transform: translateY(0); }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--red), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+            transform-origin: left;
         }
+
+        .skill-card:hover::before { transform: scaleX(1); }
 
         .skill-card:hover {
             border-color: var(--red);
-            box-shadow: 0 4px 20px rgba(192, 57, 43, 0.15);
-            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(231, 76, 60, 0.12);
+            transform: translateY(-4px) !important;
         }
 
-        .skill-card-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
+        .skill-card-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
 
-        .skill-card h4 {
-            font-size: 0.95rem;
-            color: var(--white-pure);
-            margin-bottom: 0.35rem;
-        }
+        .skill-card h4 { font-size: 0.95rem; color: var(--white-pure); margin-bottom: 0.3rem; font-weight: 600; }
 
-        .skill-card p {
-            font-size: 0.8rem;
-            color: rgba(245, 240, 235, 0.5);
-            line-height: 1.5;
-        }
+        .skill-card p { font-size: 0.8rem; color: rgba(245, 240, 235, 0.5); line-height: 1.5; }
 
-        /* ===== MEDIA PLACEHOLDERS ===== */
+        /* ===== MEDIA ===== */
         .media-placeholder {
             background: var(--black-light);
             border: 2px dashed var(--black-soft);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 3rem 2rem;
             text-align: center;
             margin: 2rem 0;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
         }
 
-        .media-placeholder:hover {
-            border-color: var(--red);
-        }
+        .media-placeholder:hover { border-color: var(--red); }
 
-        .media-placeholder-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.75rem;
-            opacity: 0.5;
-        }
+        .media-placeholder-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.5; }
+        .media-placeholder-text { font-size: 0.85rem; color: rgba(245, 240, 235, 0.4); }
+        .media-placeholder-label { font-size: 0.7rem; color: var(--red); letter-spacing: 2px; text-transform: uppercase; margin-top: 0.5rem; }
 
-        .media-placeholder-text {
-            font-size: 0.85rem;
-            color: rgba(245, 240, 235, 0.4);
-        }
-
-        .media-placeholder-label {
-            font-size: 0.7rem;
-            color: var(--red);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-top: 0.5rem;
-        }
-
-        /* For actual images and videos */
-        .media-image {
-            width: 100%;
-            border-radius: 12px;
-            margin: 2rem 0;
-            border: 1px solid var(--black-soft);
-        }
+        .media-image { width: 100%; border-radius: 16px; margin: 2rem 0; border: 1px solid var(--black-soft); }
 
         .media-video-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 56.25%;
+            padding-top: 56.25%; /* 16:9 */
             margin: 2rem 0;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
             background: var(--black-light);
             border: 1px solid var(--black-soft);
         }
 
+        .media-video-wrapper.vertical { padding-top: 177.78%; /* 9:16 */ }
+
         .media-video-wrapper iframe,
         .media-video-wrapper video {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
         }
 
-        /* ===== GALLERY GRID ===== */
+        /* ===== GALLERY ===== */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -663,7 +690,7 @@
         .gallery-item {
             aspect-ratio: 4/3;
             background: var(--black-light);
-            border-radius: 8px;
+            border-radius: 12px;
             border: 2px dashed var(--black-soft);
             display: flex;
             flex-direction: column;
@@ -673,18 +700,11 @@
             overflow: hidden;
         }
 
-        .gallery-item:hover {
-            border-color: var(--red);
-        }
+        .gallery-item:hover { border-color: var(--red); transform: scale(1.02); }
 
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-        }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* ===== CONTACT SECTION ===== */
+        /* ===== CONTACT ===== */
         .contact-links {
             display: flex;
             flex-wrap: wrap;
@@ -699,7 +719,7 @@
             background: var(--black-light);
             border: 1px solid var(--black-soft);
             padding: 1rem 1.5rem;
-            border-radius: 8px;
+            border-radius: 12px;
             text-decoration: none;
             color: var(--white);
             transition: all 0.3s;
@@ -708,16 +728,12 @@
 
         .contact-link:hover {
             border-color: var(--red);
-            background: rgba(192, 57, 43, 0.1);
-            transform: translateY(-2px);
+            background: rgba(231, 76, 60, 0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
 
-        .contact-link svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--red);
-            flex-shrink: 0;
-        }
+        .contact-link svg { width: 20px; height: 20px; fill: var(--red); flex-shrink: 0; }
 
         /* ===== FOOTER ===== */
         .book-footer {
@@ -727,20 +743,19 @@
             margin-top: 4rem;
         }
 
-        .book-footer p {
-            color: rgba(245, 240, 235, 0.3);
-            font-size: 0.8rem;
-        }
+        .book-footer p { color: rgba(245, 240, 235, 0.3); font-size: 0.8rem; }
 
         .footer-end {
             font-family: var(--font-en);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: var(--red);
             margin-bottom: 0.5rem;
             letter-spacing: 3px;
         }
 
-        /* ===== PAGE TURN SEPARATOR ===== */
+        .footer-wink { font-size: 1.5rem; margin-bottom: 0.5rem; }
+
+        /* ===== PAGE TURN ===== */
         .page-turn {
             text-align: center;
             padding: 3rem 0;
@@ -750,11 +765,9 @@
         .page-turn::before {
             content: '';
             position: absolute;
-            left: 50%;
-            top: 50%;
+            left: 50%; top: 50%;
             transform: translate(-50%, -50%);
-            width: 200px;
-            height: 1px;
+            width: 200px; height: 1px;
             background: linear-gradient(90deg, transparent, var(--red), transparent);
         }
 
@@ -764,9 +777,7 @@
             padding: 0 1rem;
             position: relative;
             color: var(--red);
-            font-family: var(--font-en);
-            font-size: 0.8rem;
-            letter-spacing: 3px;
+            font-size: 1.2rem;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -777,11 +788,12 @@
             .skills-grid { grid-template-columns: 1fr; }
             .gallery-grid { grid-template-columns: 1fr; }
             .contact-links { flex-direction: column; }
-            .profile-image-wrapper { width: 140px; height: 140px; }
-            .menu-toggle { top: 1rem; left: 1rem; width: 42px; height: 42px; }
-            .story-text p:first-child::first-letter {
-                font-size: 2.8rem;
-            }
+            .profile-image-wrapper { width: 130px; height: 130px; }
+            .menu-toggle { top: 1rem; left: 1rem; width: 44px; height: 44px; }
+            .top-bar { top: 1rem; right: 1rem; }
+            .story-text p:first-child::first-letter { font-size: 2.8rem; }
+            .cover-deco { display: none; }
+            .book-nav { width: 85vw; }
         }
 
         /* ===== ANIMATIONS ===== */
@@ -790,432 +802,422 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .fade-in {
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-
+        .fade-in { animation: fadeInUp 0.8s ease-out forwards; }
         .delay-1 { animation-delay: 0.2s; }
         .delay-2 { animation-delay: 0.4s; }
-        .delay-3 { animation-delay: 0.6s; }
     </style>
 </head>
 <body>
 
-    <!-- Reading Progress Bar -->
+    <!-- Reading Progress -->
     <div class="reading-progress" id="readingProgress"></div>
 
-    <!-- Menu Toggle Button -->
+    <!-- Menu Toggle (disappears when sidebar is open) -->
     <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
         <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
     </button>
 
-    <!-- Navigation Overlay -->
+    <!-- Language Toggle (top right) -->
+    <div class="top-bar">
+        <button class="lang-toggle" id="langToggle" aria-label="Toggle language">
+            <span class="flag" id="langFlag">TH</span>
+            <span id="langLabel">EN</span>
+        </button>
+    </div>
+
+    <!-- Overlay -->
     <div class="nav-overlay" id="navOverlay"></div>
 
-    <!-- Book Navigation (Sidebar) -->
+    <!-- Sidebar Navigation -->
     <nav class="book-nav" id="bookNav">
         <div class="book-nav-header">
-            <h2>Table of Contents</h2>
-            <p>Keng's Story</p>
+            <div class="book-nav-header-text">
+                <h2 data-th="สารบัญ" data-en="Table of Contents">สารบัญ</h2>
+                <p>Keng's Story</p>
+            </div>
+            <button class="nav-close-btn" id="navCloseBtn" aria-label="Close menu">&times;</button>
         </div>
         <ul class="chapter-list">
-            <li><a href="#cover"><span class="chapter-num">&mdash;</span> Cover</a></li>
-            <li><a href="#prologue"><span class="chapter-num">01</span> Prologue</a></li>
-            <li><a href="#origin"><span class="chapter-num">02</span> Origin Story</a></li>
-            <li><a href="#career"><span class="chapter-num">03</span> The Adventures</a></li>
-            <li><a href="#skills"><span class="chapter-num">04</span> Arsenal</a></li>
-            <li><a href="#gallery"><span class="chapter-num">05</span> Gallery</a></li>
-            <li><a href="#contact"><span class="chapter-num">06</span> Get In Touch</a></li>
+            <li><a href="#cover"><span class="chapter-num">&mdash;</span> <span data-th="หน้าปก" data-en="Cover">หน้าปก</span></a></li>
+            <li><a href="#prologue"><span class="chapter-num">01</span> <span data-th="บทนำ" data-en="Prologue">บทนำ</span></a></li>
+            <li><a href="#origin"><span class="chapter-num">02</span> <span data-th="จุดเริ่มต้น" data-en="Origin Story">จุดเริ่มต้น</span></a></li>
+            <li><a href="#career"><span class="chapter-num">03</span> <span data-th="การผจญภัย" data-en="The Adventures">การผจญภัย</span></a></li>
+            <li><a href="#showreel"><span class="chapter-num">04</span> <span data-th="ผลงาน" data-en="Showreel">ผลงาน</span></a></li>
+            <li><a href="#skills"><span class="chapter-num">05</span> <span data-th="คลังอาวุธ" data-en="Arsenal">คลังอาวุธ</span></a></li>
+            <li><a href="#gallery"><span class="chapter-num">06</span> <span data-th="แกลเลอรี" data-en="Gallery">แกลเลอรี</span></a></li>
+            <li><a href="#contact"><span class="chapter-num">07</span> <span data-th="ติดต่อ" data-en="Get In Touch">ติดต่อ</span></a></li>
         </ul>
-        <div class="nav-footer">
-            &copy; 2026 Keng Playthong
-        </div>
+        <div class="nav-footer">&copy; 2026 Keng Playthong</div>
     </nav>
 
     <main class="book-page">
 
         <!-- ==================== COVER ==================== -->
         <section class="cover" id="cover">
+            <div class="cover-deco">&#127916;</div>
+            <div class="cover-deco">&#127908;</div>
+            <div class="cover-deco">&#128187;</div>
+            <div class="cover-deco">&#127912;</div>
+
             <div class="cover-frame fade-in">
                 <div class="profile-image-wrapper">
-                    <!-- TODO: ใส่รูปโปรไฟล์ของคุณ -->
                     <div class="profile-image">
-                        <span>ใส่รูปโปรไฟล์</span>
+                        <!-- TODO: ใส่รูปโปรไฟล์ -->
+                        <span data-th="ใส่รูปโปรไฟล์" data-en="Profile Photo">ใส่รูปโปรไฟล์</span>
                     </div>
                 </div>
-                <div class="cover-label">A Portfolio Story</div>
+                <div class="cover-badge" data-th="A PORTFOLIO STORY" data-en="A PORTFOLIO STORY">A PORTFOLIO STORY</div>
                 <h1 class="cover-title">Keng<br>Playthong</h1>
-                <p class="cover-name-th">ธีรพันธ์ พลายทอง</p>
+                <p class="cover-name-th" data-th="ธีรพันธ์ พลายทอง" data-en="Teeraphun Playthong">ธีรพันธ์ พลายทอง</p>
                 <p class="cover-tagline">
-                    จากเด็กบ้านนอกหัวหิน สู่ Product Marketing Coordinator<br>
-                    ผ่านเวทีละคร บาร์ค็อกเทล หัวหน้าแผนกขาย และอีกหลายสนามรบ<br>
-                    นี่คือเรื่องราวของผม...
+                    <span data-th="จากเด็กบ้านนอกหัวหิน สู่ <span class='highlight'>Product Marketing Coordinator</span><br>ผ่านเวทีละคร บาร์ค็อกเทล หัวหน้าแผนกขาย และอีกหลายสนามรบ<br>นี่คือเรื่องราวของผม..." data-en="From a small-town kid in Hua Hin to <span class='highlight'>Product Marketing Coordinator</span><br>Through theater stages, cocktail bars, sales leadership, and many more battlefields<br>This is my story...">จากเด็กบ้านนอกหัวหิน สู่ <span class="highlight">Product Marketing Coordinator</span><br>ผ่านเวทีละคร บาร์ค็อกเทล หัวหน้าแผนกขาย และอีกหลายสนามรบ<br>นี่คือเรื่องราวของผม...</span>
                 </p>
             </div>
             <div class="scroll-hint">
-                <span>SCROLL TO READ</span>
+                <span data-th="เลื่อนเพื่ออ่าน" data-en="SCROLL TO READ">เลื่อนเพื่ออ่าน</span>
                 <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h12l-6 6z"/></svg>
             </div>
         </section>
 
-        <!-- ==================== CHAPTER 1: PROLOGUE ==================== -->
-        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+        <!-- ==================== CH.1 PROLOGUE ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">&#9830; &#9830; &#9830;</span></div>
 
         <section class="chapter" id="prologue">
             <div class="chapter-header">
                 <div class="chapter-label">Chapter 01</div>
                 <h2 class="chapter-title">Prologue</h2>
-                <p class="chapter-subtitle">"สวัสดี ผมเก่ง"</p>
+                <p class="chapter-subtitle" data-th="&ldquo;สวัสดี ผมเก่ง&rdquo;" data-en="&ldquo;Hi, I'm Keng&rdquo;">&ldquo;สวัสดี ผมเก่ง&rdquo;</p>
                 <div class="divider"></div>
             </div>
 
             <div class="story-text">
-                <p>สวัสดีครับ ผม ธีรพันธ์ พลายทอง หรือเรียกสั้นๆ ว่า "เก่ง" ก็ได้ครับ ไม่ได้เก่งจริงหรอก แต่พ่อแม่ตั้งชื่อมาแบบนี้ ก็ต้องพยายามให้สมชื่อกันหน่อย</p>
+                <p data-th="สวัสดีครับ ผม ธีรพันธ์ พลายทอง หรือเรียกสั้นๆ ว่า &ldquo;เก่ง&rdquo; ก็ได้ครับ ไม่ได้เก่งจริงหรอก แต่พ่อแม่ตั้งชื่อมาแบบนี้ ก็ต้องพยายามให้สมชื่อกันหน่อย" data-en="Hi there! I'm Teeraphun Playthong, or just call me &ldquo;Keng.&rdquo; It literally means &ldquo;talented&rdquo; in Thai &mdash; no pressure, right? My parents named me this, so I've been trying to live up to it ever since.">สวัสดีครับ ผม ธีรพันธ์ พลายทอง หรือเรียกสั้นๆ ว่า &ldquo;เก่ง&rdquo; ก็ได้ครับ ไม่ได้เก่งจริงหรอก แต่พ่อแม่ตั้งชื่อมาแบบนี้ ก็ต้องพยายามให้สมชื่อกันหน่อย</p>
 
-                <p>ผมเป็นคนร่าเริง อารมณ์ดี ชอบช่วยเหลือผู้อื่น ชอบความท้าทาย และชอบเรียนรู้สิ่งใหม่ๆ อยู่เสมอ แก้ไขปัญหาได้ดีทั้งเฉพาะหน้าและระยะยาว ปรับตัวเข้ากับผู้คนและสถานการณ์ต่างๆ ได้เป็นอย่างดี</p>
+                <p data-th="ผมเป็นคนร่าเริง อารมณ์ดี ชอบช่วยเหลือผู้อื่น ชอบความท้าทาย และชอบเรียนรู้สิ่งใหม่ๆ อยู่เสมอ แก้ไขปัญหาได้ดีทั้งเฉพาะหน้าและระยะยาว ปรับตัวเข้ากับผู้คนและสถานการณ์ต่างๆ ได้เป็นอย่างดี" data-en="I'm a cheerful, positive person who loves helping others. I thrive on challenges and never stop learning. Whether it's solving immediate problems or long-term strategy, I adapt well to any situation and connect easily with people.">ผมเป็นคนร่าเริง อารมณ์ดี ชอบช่วยเหลือผู้อื่น ชอบความท้าทาย และชอบเรียนรู้สิ่งใหม่ๆ อยู่เสมอ แก้ไขปัญหาได้ดีทั้งเฉพาะหน้าและระยะยาว ปรับตัวเข้ากับผู้คนและสถานการณ์ต่างๆ ได้เป็นอย่างดี</p>
 
-                <div class="fun-note">ถ้าชีวิตเป็นเกม ผมน่าจะเป็นตัวละครที่เลือก Multi-class ไว้ เพราะทำได้หลายอย่างจนบางทีตัวเองก็งง</div>
+                <div class="fun-note" data-emoji="&#127918;" data-th="ถ้าชีวิตเป็นเกม ผมน่าจะเป็นตัวละครที่เลือก Multi-class ไว้ เพราะทำได้หลายอย่างจนบางทีตัวเองก็งง" data-en="If life were an RPG, I'd be that character who chose Multi-class &mdash; doing so many things that sometimes even I get confused.">ถ้าชีวิตเป็นเกม ผมน่าจะเป็นตัวละครที่เลือก Multi-class ไว้ เพราะทำได้หลายอย่างจนบางทีตัวเองก็งง</div>
 
-                <p>ผมกำลังมองหางานที่ได้ใช้ความคิดสร้างสรรค์ และทักษะการสื่อสารของผม ไม่ว่าจะเป็นการทำคอนเทนต์ หรือกลยุทธ์ที่มีพลังด้วยประสบการณ์ของผม เพื่อช่วยให้แบรนด์เติบโต สร้างรอยยิ้มให้ผู้คน</p>
+                <p data-th="ผมกำลังมองหางานที่ได้ใช้ความคิดสร้างสรรค์ และทักษะการสื่อสารของผม ไม่ว่าจะเป็นการทำคอนเทนต์ หรือกลยุทธ์ที่มีพลังด้วยประสบการณ์ของผม เพื่อช่วยให้แบรนด์เติบโต สร้างรอยยิ้มให้ผู้คน" data-en="I'm looking for opportunities where I can unleash my creativity and communication skills &mdash; whether it's content creation, marketing strategy, or product management. I want to help brands grow and make people smile.">ผมกำลังมองหางานที่ได้ใช้ความคิดสร้างสรรค์ และทักษะการสื่อสารของผม ไม่ว่าจะเป็นการทำคอนเทนต์ หรือกลยุทธ์ที่มีพลังด้วยประสบการณ์ของผม เพื่อช่วยให้แบรนด์เติบโต สร้างรอยยิ้มให้ผู้คน</p>
             </div>
 
-            <!-- Placeholder: รูปภาพแนะนำตัว -->
             <div class="media-placeholder">
                 <div class="media-placeholder-icon">&#128247;</div>
-                <div class="media-placeholder-text">ใส่รูปภาพแนะนำตัว หรือรูป Lifestyle ของคุณ</div>
+                <div class="media-placeholder-text" data-th="ใส่รูปภาพแนะนำตัว หรือรูป Lifestyle ของคุณ" data-en="Add your intro photo or lifestyle image here">ใส่รูปภาพแนะนำตัว หรือรูป Lifestyle ของคุณ</div>
                 <div class="media-placeholder-label">IMAGE PLACEHOLDER</div>
             </div>
-            <!--
-                วิธีใส่รูป: แทนที่ div ด้านบนด้วย
-                <img class="media-image" src="images/intro-photo.jpg" alt="รูปแนะนำตัว" loading="lazy">
-            -->
         </section>
 
-        <!-- ==================== CHAPTER 2: ORIGIN STORY ==================== -->
-        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+        <!-- ==================== CH.2 ORIGIN ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">&#9830; &#9830; &#9830;</span></div>
 
         <section class="chapter" id="origin">
             <div class="chapter-header">
                 <div class="chapter-label">Chapter 02</div>
                 <h2 class="chapter-title">Origin Story</h2>
-                <p class="chapter-subtitle">"ทุกฮีโร่มีจุดเริ่มต้น (ของผมเริ่มจากเวทีละคร)"</p>
+                <p class="chapter-subtitle" data-th="&ldquo;ทุกฮีโร่มีจุดเริ่มต้น (ของผมเริ่มจากเวทีละคร)&rdquo;" data-en="&ldquo;Every hero has an origin (mine started on a theater stage)&rdquo;">&ldquo;ทุกฮีโร่มีจุดเริ่มต้น (ของผมเริ่มจากเวทีละคร)&rdquo;</p>
                 <div class="divider"></div>
             </div>
 
             <div class="story-text">
-                <p>เรื่องราวของผมเริ่มต้นที่พัทยา ตอนอายุ 16 ผมก้าวขึ้นเวทีโรงละครไทยอลังการ เป็นนักแสดงละครเวทีย้อนยุค ฟังดูเท่ไหมครับ? แต่ตอนนั้นต้องแต่งหน้าหนามาก จนแม่มาดูยังจำลูกตัวเองไม่ได้</p>
+                <p data-th="เรื่องราวของผมเริ่มต้นที่พัทยา ตอนอายุ 16 ผมก้าวขึ้นเวทีโรงละครไทยอลังการ เป็นนักแสดงละครเวทีย้อนยุค ฟังดูเท่ไหมครับ? แต่ตอนนั้นต้องแต่งหน้าหนามาก จนแม่มาดูยังจำลูกตัวเองไม่ได้" data-en="My story began in Pattaya at 16 when I stepped onto the stage at Thai Alangkarn Theater as a period drama actor. Sounds cool, right? Except the makeup was so thick that my own mom couldn't recognize me.">เรื่องราวของผมเริ่มต้นที่พัทยา ตอนอายุ 16 ผมก้าวขึ้นเวทีโรงละครไทยอลังการ เป็นนักแสดงละครเวทีย้อนยุค ฟังดูเท่ไหมครับ? แต่ตอนนั้นต้องแต่งหน้าหนามาก จนแม่มาดูยังจำลูกตัวเองไม่ได้</p>
 
-                <p>แต่สิ่งที่ผมได้จากเวทีละครนั้นมีค่ามหาศาล ทั้งความกล้าแสดงออก การทำงานเป็นทีม และที่สำคัญคือ "การเล่าเรื่อง" ซึ่งเป็นทักษะที่ติดตัวผมมาจนถึงทุกวันนี้</p>
+                <p data-th="แต่สิ่งที่ผมได้จากเวทีละครนั้นมีค่ามหาศาล ทั้งความกล้าแสดงออก การทำงานเป็นทีม และที่สำคัญคือ &ldquo;การเล่าเรื่อง&rdquo; ซึ่งเป็นทักษะที่ติดตัวผมมาจนถึงทุกวันนี้" data-en="But what I gained from that stage was priceless: the confidence to express myself, teamwork, and most importantly &ldquo;storytelling&rdquo; &mdash; a skill that has stayed with me to this day.">แต่สิ่งที่ผมได้จากเวทีละครนั้นมีค่ามหาศาล ทั้งความกล้าแสดงออก การทำงานเป็นทีม และที่สำคัญคือ &ldquo;การเล่าเรื่อง&rdquo; ซึ่งเป็นทักษะที่ติดตัวผมมาจนถึงทุกวันนี้</p>
 
-                <div class="fun-note">Fun Fact: ผมเคยเล่นเป็นทหารที่ตายฉากแรก แต่ต้องนอนอยู่บนเวทีตลอดเรื่อง... นี่แหละบทเรียนแรกของคำว่า "อดทน"</div>
+                <div class="fun-note" data-emoji="&#128128;" data-th="Fun Fact: ผมเคยเล่นเป็นทหารที่ตายฉากแรก แต่ต้องนอนอยู่บนเวทีตลอดเรื่อง... นี่แหละบทเรียนแรกของคำว่า &ldquo;อดทน&rdquo;" data-en="Fun Fact: I once played a soldier who died in the first scene but had to lie on stage for the ENTIRE show... That's my first lesson in &ldquo;patience.&rdquo;">Fun Fact: ผมเคยเล่นเป็นทหารที่ตายฉากแรก แต่ต้องนอนอยู่บนเวทีตลอดเรื่อง... นี่แหละบทเรียนแรกของคำว่า &ldquo;อดทน&rdquo;</div>
             </div>
 
-            <!-- Placeholder: วิดีโอ/รูปจากสมัยเป็นนักแสดง -->
             <div class="media-placeholder">
                 <div class="media-placeholder-icon">&#127909;</div>
-                <div class="media-placeholder-text">ใส่คลิปวิดีโอ หรือรูปภาพสมัยเป็นนักแสดง</div>
+                <div class="media-placeholder-text" data-th="ใส่คลิปวิดีโอ หรือรูปภาพสมัยเป็นนักแสดง" data-en="Add a video or photo from your theater days">ใส่คลิปวิดีโอ หรือรูปภาพสมัยเป็นนักแสดง</div>
                 <div class="media-placeholder-label">VIDEO / IMAGE PLACEHOLDER</div>
             </div>
-            <!--
-                วิธีใส่วิดีโอ YouTube:
-                <div class="media-video-wrapper">
-                    <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen loading="lazy"></iframe>
-                </div>
-
-                วิธีใส่วิดีโอไฟล์:
-                <div class="media-video-wrapper">
-                    <video controls preload="metadata" poster="images/video-thumb.jpg">
-                        <source src="videos/your-video.mp4" type="video/mp4">
-                    </video>
-                </div>
-            -->
         </section>
 
-        <!-- ==================== CHAPTER 3: THE ADVENTURES ==================== -->
-        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+        <!-- ==================== CH.3 THE ADVENTURES ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">&#9830; &#9830; &#9830;</span></div>
 
         <section class="chapter" id="career">
             <div class="chapter-header">
                 <div class="chapter-label">Chapter 03</div>
                 <h2 class="chapter-title">The Adventures</h2>
-                <p class="chapter-subtitle">"แต่ละงานคือด่านใหม่ที่ต้องพิชิต"</p>
+                <p class="chapter-subtitle" data-th="&ldquo;แต่ละงานคือด่านใหม่ที่ต้องพิชิต&rdquo;" data-en="&ldquo;Every job is a new level to conquer&rdquo;">&ldquo;แต่ละงานคือด่านใหม่ที่ต้องพิชิต&rdquo;</p>
                 <div class="divider"></div>
             </div>
 
             <div class="story-text">
-                <p>หลังจากลงจากเวทีละคร ผมก็ออกผจญภัยในโลกการทำงานจริง แต่ละที่สอนบทเรียนที่ไม่มีมหาวิทยาลัยไหนสอน (จริงๆ ก็ไม่ได้เรียนมหาวิทยาลัย) แต่ประสบการณ์ชีวิตนี่แหละครับ คือมหาวิทยาลัยที่ดีที่สุดของผม</p>
+                <p data-th="หลังจากลงจากเวทีละคร ผมก็ออกผจญภัยในโลกการทำงานจริง แต่ละที่สอนบทเรียนที่ไม่มีมหาวิทยาลัยไหนสอน (จริงๆ ก็ไม่ได้เรียนมหาวิทยาลัย) แต่ประสบการณ์ชีวิตนี่แหละครับ คือมหาวิทยาลัยที่ดีที่สุดของผม" data-en="After leaving the stage, I embarked on adventures in the real working world. Each place taught me lessons no university could (I didn't go to university anyway). But life experience? That's the best school I ever attended.">หลังจากลงจากเวทีละคร ผมก็ออกผจญภัยในโลกการทำงานจริง แต่ละที่สอนบทเรียนที่ไม่มีมหาวิทยาลัยไหนสอน (จริงๆ ก็ไม่ได้เรียนมหาวิทยาลัย) แต่ประสบการณ์ชีวิตนี่แหละครับ คือมหาวิทยาลัยที่ดีที่สุดของผม</p>
             </div>
 
             <div class="timeline">
-                <!-- Timeline Item 1 -->
+                <!-- 1 -->
                 <div class="timeline-item">
                     <div class="timeline-date">Apr 2012 - Mar 2014</div>
-                    <div class="timeline-role">นักแสดงละครเวที</div>
-                    <div class="timeline-company">โรงละครไทยอลังการ, พัทยา</div>
+                    <div class="timeline-role" data-th="นักแสดงละครเวที" data-en="Theater Actor">นักแสดงละครเวที</div>
+                    <div class="timeline-company" data-th="โรงละครไทยอลังการ, พัทยา" data-en="Thai Alangkarn Theater, Pattaya">โรงละครไทยอลังการ, พัทยา</div>
                     <div class="timeline-desc">
                         <ul>
-                            <li>แสดงละครเวทีย้อนยุคตามบทบาทที่ได้รับ</li>
-                            <li>ฝึกซ้อมและพัฒนาบทบาทอย่างต่อเนื่อง</li>
+                            <li data-th="แสดงละครเวทีย้อนยุคตามบทบาทที่ได้รับ" data-en="Performed in period drama stage productions">แสดงละครเวทีย้อนยุคตามบทบาทที่ได้รับ</li>
+                            <li data-th="ฝึกซ้อมและพัฒนาบทบาทอย่างต่อเนื่อง" data-en="Continuously rehearsed and refined performances">ฝึกซ้อมและพัฒนาบทบาทอย่างต่อเนื่อง</li>
                         </ul>
-                        <div class="fun-note">จุดเริ่มต้นที่ทำให้ผมกล้าพูดหน้ากล้อง กล้ายืนหน้าคน และกล้าเล่าเรื่อง</div>
+                        <div class="fun-note" data-emoji="&#127917;" data-th="จุดเริ่มต้นที่ทำให้ผมกล้าพูดหน้ากล้อง กล้ายืนหน้าคน และกล้าเล่าเรื่อง" data-en="This is where I learned to face cameras, stand in front of crowds, and tell stories.">จุดเริ่มต้นที่ทำให้ผมกล้าพูดหน้ากล้อง กล้ายืนหน้าคน และกล้าเล่าเรื่อง</div>
                     </div>
                 </div>
 
-                <!-- Timeline Item 2 -->
+                <!-- 2 -->
                 <div class="timeline-item">
                     <div class="timeline-date">Jul 2014 - Oct 2017</div>
-                    <div class="timeline-role">พนักงานเสิร์ฟ / แคชเชียร์ / บาร์เทนเดอร์</div>
-                    <div class="timeline-company">ร้านไอร่อนคลับ, พัทยา</div>
+                    <div class="timeline-role" data-th="พนักงานเสิร์ฟ / แคชเชียร์ / บาร์เทนเดอร์" data-en="Waiter / Cashier / Bartender">พนักงานเสิร์ฟ / แคชเชียร์ / บาร์เทนเดอร์</div>
+                    <div class="timeline-company" data-th="ร้านไอร่อนคลับ, พัทยา" data-en="Iron Club, Pattaya">ร้านไอร่อนคลับ, พัทยา</div>
                     <div class="timeline-desc">
                         <ul>
-                            <li>รับออเดอร์และให้บริการลูกค้า</li>
-                            <li>คิดเงินและทำบัญชีรายจ่ายของร้าน</li>
-                            <li>ผสมเครื่องดื่มแอลกอฮอล์ให้ลูกค้า</li>
+                            <li data-th="รับออเดอร์และให้บริการลูกค้า" data-en="Took orders and served customers">รับออเดอร์และให้บริการลูกค้า</li>
+                            <li data-th="คิดเงินและทำบัญชีรายจ่ายของร้าน" data-en="Managed billing and store expenses">คิดเงินและทำบัญชีรายจ่ายของร้าน</li>
+                            <li data-th="ผสมเครื่องดื่มแอลกอฮอล์ให้ลูกค้า" data-en="Mixed cocktails and served drinks">ผสมเครื่องดื่มแอลกอฮอล์ให้ลูกค้า</li>
                         </ul>
-                        <div class="fun-note">ตอนผสมค็อกเทลแรกๆ ลูกค้าเรียก "น้ำยาล้างจาน" แต่สุดท้ายก็ปรับสูตรจนเป็นเมนูขายดี!</div>
+                        <div class="fun-note" data-emoji="&#127864;" data-th="ตอนผสมค็อกเทลแรกๆ ลูกค้าเรียก &ldquo;น้ำยาล้างจาน&rdquo; แต่สุดท้ายก็ปรับสูตรจนเป็นเมนูขายดี!" data-en="My first cocktails were called &ldquo;dishwashing liquid&rdquo; by customers... but I eventually perfected the recipe into a bestseller!">ตอนผสมค็อกเทลแรกๆ ลูกค้าเรียก &ldquo;น้ำยาล้างจาน&rdquo; แต่สุดท้ายก็ปรับสูตรจนเป็นเมนูขายดี!</div>
                     </div>
                 </div>
 
-                <!-- Timeline Item 3 -->
+                <!-- 3 -->
                 <div class="timeline-item">
                     <div class="timeline-date">Apr 2021 - Sep 2021</div>
-                    <div class="timeline-role">แอดมิน (แผนกทรัพยากรมนุษย์)</div>
-                    <div class="timeline-company">บริษัท โดลไทยแลนด์ จำกัด, โรงงานหัวหิน</div>
+                    <div class="timeline-role" data-th="แอดมิน (แผนกทรัพยากรมนุษย์)" data-en="HR Admin">แอดมิน (แผนกทรัพยากรมนุษย์)</div>
+                    <div class="timeline-company" data-th="บริษัท โดลไทยแลนด์ จำกัด, โรงงานหัวหิน" data-en="Dole Thailand Ltd., Hua Hin Factory">บริษัท โดลไทยแลนด์ จำกัด, โรงงานหัวหิน</div>
                     <div class="timeline-desc">
                         <ul>
-                            <li>จัดเรียงเอกสาร คัดแยกประเภทเอกสารของพนักงาน</li>
-                            <li>คีย์ข้อมูลพนักงานลงในระบบ</li>
+                            <li data-th="จัดเรียงเอกสาร คัดแยกประเภทเอกสารของพนักงาน" data-en="Organized and categorized employee documents">จัดเรียงเอกสาร คัดแยกประเภทเอกสารของพนักงาน</li>
+                            <li data-th="คีย์ข้อมูลพนักงานลงในระบบ" data-en="Entered employee data into the system">คีย์ข้อมูลพนักงานลงในระบบ</li>
                         </ul>
-                        <div class="fun-note">ได้เรียนรู้ว่าการจัดระเบียบเอกสารก็เหมือนจัดระเบียบชีวิต ถ้าไม่เริ่มตอนนี้ มันจะพังในภายหลัง</div>
+                        <div class="fun-note" data-emoji="&#128451;" data-th="ได้เรียนรู้ว่าการจัดระเบียบเอกสารก็เหมือนจัดระเบียบชีวิต ถ้าไม่เริ่มตอนนี้ มันจะพังในภายหลัง" data-en="I learned that organizing documents is like organizing your life &mdash; if you don't start now, it'll collapse later.">ได้เรียนรู้ว่าการจัดระเบียบเอกสารก็เหมือนจัดระเบียบชีวิต ถ้าไม่เริ่มตอนนี้ มันจะพังในภายหลัง</div>
                     </div>
                 </div>
 
-                <!-- Timeline Item 4 -->
+                <!-- 4 -->
                 <div class="timeline-item">
                     <div class="timeline-date">Oct 2021 - Nov 2022</div>
-                    <div class="timeline-role">พนักงานทั่วไป</div>
-                    <div class="timeline-company">โกเพาเวอร์, สาขาหัวหิน</div>
+                    <div class="timeline-role" data-th="พนักงานทั่วไป" data-en="General Staff">พนักงานทั่วไป</div>
+                    <div class="timeline-company" data-th="โกเพาเวอร์, สาขาหัวหิน" data-en="Go Power, Hua Hin Branch">โกเพาเวอร์, สาขาหัวหิน</div>
                     <div class="timeline-desc">
                         <ul>
-                            <li>ขายสินค้าเครื่องใช้ไฟฟ้าภายในบ้าน อุปกรณ์ IT</li>
-                            <li>บริการลูกค้า (แคชเชียร์, ออกใบกำกับภาษี)</li>
-                            <li>ดูแลเอกสารต่างๆ และตรวจรับสินค้า</li>
+                            <li data-th="ขายสินค้าเครื่องใช้ไฟฟ้าภายในบ้าน อุปกรณ์ IT" data-en="Sold home appliances and IT equipment">ขายสินค้าเครื่องใช้ไฟฟ้าภายในบ้าน อุปกรณ์ IT</li>
+                            <li data-th="บริการลูกค้า (แคชเชียร์, ออกใบกำกับภาษี)" data-en="Customer service (cashier, tax invoices)">บริการลูกค้า (แคชเชียร์, ออกใบกำกับภาษี)</li>
+                            <li data-th="ดูแลเอกสารต่างๆ และตรวจรับสินค้า" data-en="Document management and inventory receiving">ดูแลเอกสารต่างๆ และตรวจรับสินค้า</li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- Timeline Item 5 (Main) -->
+                <!-- 5 -->
                 <div class="timeline-item">
                     <div class="timeline-date">Dec 2022 - Jul 2025</div>
-                    <div class="timeline-role">หัวหน้าแผนกการขาย</div>
-                    <div class="timeline-company">เพาเวอร์บาย, สาขาชิดลม & เซ็นทรัลพระราม 9</div>
+                    <div class="timeline-role" data-th="หัวหน้าแผนกการขาย" data-en="Head of Sales Department">หัวหน้าแผนกการขาย</div>
+                    <div class="timeline-company" data-th="เพาเวอร์บาย, สาขาชิดลม &amp; เซ็นทรัลพระราม 9" data-en="Power Buy, Chidlom &amp; Central Rama 9">เพาเวอร์บาย, สาขาชิดลม &amp; เซ็นทรัลพระราม 9</div>
                     <div class="timeline-desc">
                         <ul>
-                            <li>ดูแลและบริหารตารางการทำงานของพนักงาน</li>
-                            <li>บริหารยอดขายและกำไร 8-20 ล้านบาท/เดือน</li>
-                            <li>วิเคราะห์และรายงานยอดขาย สินค้าที่ขายดี-ขายไม่ดี</li>
-                            <li>ควบคุมสต็อคสินค้าไม่ให้ตกรุ่น</li>
-                            <li>ให้บริการและแก้ไขปัญหาให้ลูกค้าและพนักงาน</li>
-                            <li>รับข้อร้องเรียนและปรับปรุงการบริการ</li>
-                            <li>ประสานงานข้ามแผนกทั้งภายในและภายนอกองค์กร</li>
+                            <li data-th="ดูแลและบริหารตารางการทำงานของพนักงาน" data-en="Managed employee work schedules">ดูแลและบริหารตารางการทำงานของพนักงาน</li>
+                            <li data-th="บริหารยอดขายและกำไร 8-20 ล้านบาท/เดือน" data-en="Managed sales &amp; profit targets of 8-20M THB/month">บริหารยอดขายและกำไร 8-20 ล้านบาท/เดือน</li>
+                            <li data-th="วิเคราะห์และรายงานยอดขาย สินค้าที่ขายดี-ขายไม่ดี" data-en="Analyzed and reported sales performance">วิเคราะห์และรายงานยอดขาย สินค้าที่ขายดี-ขายไม่ดี</li>
+                            <li data-th="ควบคุมสต็อคสินค้าไม่ให้ตกรุ่น" data-en="Managed inventory before products became obsolete">ควบคุมสต็อคสินค้าไม่ให้ตกรุ่น</li>
+                            <li data-th="ให้บริการและแก้ไขปัญหาให้ลูกค้าและพนักงาน" data-en="Resolved issues for customers and staff">ให้บริการและแก้ไขปัญหาให้ลูกค้าและพนักงาน</li>
+                            <li data-th="ประสานงานข้ามแผนกทั้งภายในและภายนอกองค์กร" data-en="Cross-department coordination internally and externally">ประสานงานข้ามแผนกทั้งภายในและภายนอกองค์กร</li>
                         </ul>
-                        <div class="fun-note">บริหารยอดเดือนละ 8-20 ล้าน แต่เงินเดือนตัวเองยังต้องวางแผนใช้อย่างประหยัด... นี่แหละชีวิตมนุษย์เงินเดือน</div>
+                        <div class="fun-note" data-emoji="&#128176;" data-th="บริหารยอดเดือนละ 8-20 ล้าน แต่เงินเดือนตัวเองยังต้องวางแผนใช้อย่างประหยัด... นี่แหละชีวิตมนุษย์เงินเดือน" data-en="Managing 8-20 million THB monthly but still budgeting my own salary carefully... That's the salaryman life!">บริหารยอดเดือนละ 8-20 ล้าน แต่เงินเดือนตัวเองยังต้องวางแผนใช้อย่างประหยัด... นี่แหละชีวิตมนุษย์เงินเดือน</div>
                     </div>
                 </div>
 
-                <!-- Timeline Item 6 -->
+                <!-- 6 -->
                 <div class="timeline-item">
                     <div class="timeline-date">Aug 2024 - Present</div>
-                    <div class="timeline-role">Content Creator / Video Editor / Graphic Designer</div>
-                    <div class="timeline-company">รับจ้างอิสระ (งานรับเอเจนซี)</div>
+                    <div class="timeline-role" data-th="Content Creator / Video Editor / Graphic Designer" data-en="Content Creator / Video Editor / Graphic Designer">Content Creator / Video Editor / Graphic Designer</div>
+                    <div class="timeline-company" data-th="รับจ้างอิสระ (งานรับเอเจนซี)" data-en="Freelance (Agency Work)">รับจ้างอิสระ (งานรับเอเจนซี)</div>
                     <div class="timeline-desc">
                         <ul>
-                            <li>คิดคอนเทนต์ให้ตรงกับบรีฟของลูกค้า</li>
-                            <li>ทำโปรดักชั่นทั้งหมด: ตั้งกลุ่มเป้าหมาย วางบรีฟ เขียนสตอรี่บอร์ด ถ่ายภาพ ถ่ายวิดีโอ ตัดต่อ ทำกราฟฟิค</li>
+                            <li data-th="คิดคอนเทนต์ให้ตรงกับบรีฟของลูกค้า" data-en="Created content aligned with client briefs">คิดคอนเทนต์ให้ตรงกับบรีฟของลูกค้า</li>
+                            <li data-th="ทำโปรดักชั่นทั้งหมด: ตั้งกลุ่มเป้าหมาย วางบรีฟ เขียนสตอรี่บอร์ด ถ่ายภาพ ถ่ายวิดีโอ ตัดต่อ ทำกราฟฟิค" data-en="Full production: targeting, briefing, storyboarding, photography, videography, editing, graphic design">ทำโปรดักชั่นทั้งหมด: ตั้งกลุ่มเป้าหมาย วางบรีฟ เขียนสตอรี่บอร์ด ถ่ายภาพ ถ่ายวิดีโอ ตัดต่อ ทำกราฟฟิค</li>
                         </ul>
-                        <div class="fun-note">ทำคนเดียวทุกตำแหน่ง = One Man Army (แต่บางทีก็อยากมีทีมบ้างนะ)</div>
+                        <div class="fun-note" data-emoji="&#128170;" data-th="ทำคนเดียวทุกตำแหน่ง = One Man Army (แต่บางทีก็อยากมีทีมบ้างนะ)" data-en="Doing every role solo = One Man Army (but sometimes I do miss having a team)">ทำคนเดียวทุกตำแหน่ง = One Man Army (แต่บางทีก็อยากมีทีมบ้างนะ)</div>
                     </div>
                 </div>
 
-                <!-- Timeline Item 7 (Current) -->
+                <!-- 7 (Current!) -->
                 <div class="timeline-item">
-                    <div class="timeline-date">Present</div>
-                    <div class="timeline-role">Product Marketing Coordinator</div>
-                    <div class="timeline-company">ตำแหน่งปัจจุบัน</div>
+                    <div class="timeline-date">Present <span class="current-badge">NOW</span></div>
+                    <div class="timeline-role" data-th="Product Marketing Coordinator" data-en="Product Marketing Coordinator">Product Marketing Coordinator</div>
+                    <div class="timeline-company" data-th="ตำแหน่งปัจจุบัน" data-en="Current Position">ตำแหน่งปัจจุบัน</div>
                     <div class="timeline-desc">
                         <ul>
-                            <li>ติดต่อประสานงานกับ Partner และหาสินค้าใหม่ๆ เข้ามาในพอร์ต</li>
-                            <li>ดูแลสินค้าหลัก: Software & Plug-ins</li>
-                            <li>ทำ Report วิเคราะห์ข้อมูลยอดขาย ยอดสั่งซื้อ</li>
-                            <li>Forecast สินค้า ตั้งราคาขาย หาช่องทางการขาย</li>
-                            <li>วางแผนและดำเนินการด้าน Marketing</li>
+                            <li data-th="ติดต่อประสานงานกับ Partner และหาสินค้าใหม่ๆ เข้ามาในพอร์ต" data-en="Coordinated with partners and sourced new products">ติดต่อประสานงานกับ Partner และหาสินค้าใหม่ๆ เข้ามาในพอร์ต</li>
+                            <li data-th="ดูแลสินค้าหลัก: Software &amp; Plug-ins" data-en="Managed key products: Software &amp; Plug-ins">ดูแลสินค้าหลัก: Software &amp; Plug-ins</li>
+                            <li data-th="ทำ Report วิเคราะห์ข้อมูลยอดขาย ยอดสั่งซื้อ" data-en="Prepared sales &amp; order analysis reports">ทำ Report วิเคราะห์ข้อมูลยอดขาย ยอดสั่งซื้อ</li>
+                            <li data-th="Forecast สินค้า ตั้งราคาขาย หาช่องทางการขาย" data-en="Product forecasting, pricing, and sales channel strategy">Forecast สินค้า ตั้งราคาขาย หาช่องทางการขาย</li>
+                            <li data-th="วางแผนและดำเนินการด้าน Marketing" data-en="Planned and executed marketing campaigns">วางแผนและดำเนินการด้าน Marketing</li>
                         </ul>
-                        <div class="fun-note">จาก "ขายของหน้าร้าน" สู่ "วางกลยุทธ์สินค้าระดับ Software" เส้นทางนี้ไม่มีใครเขียนบทให้ ผมเขียนเอง!</div>
+                        <div class="fun-note" data-emoji="&#128640;" data-th="จาก &ldquo;ขายของหน้าร้าน&rdquo; สู่ &ldquo;วางกลยุทธ์สินค้าระดับ Software&rdquo; เส้นทางนี้ไม่มีใครเขียนบทให้ ผมเขียนเอง!" data-en="From &ldquo;selling in-store&rdquo; to &ldquo;strategizing Software products&rdquo; &mdash; nobody wrote this script for me. I wrote it myself!">จาก &ldquo;ขายของหน้าร้าน&rdquo; สู่ &ldquo;วางกลยุทธ์สินค้าระดับ Software&rdquo; เส้นทางนี้ไม่มีใครเขียนบทให้ ผมเขียนเอง!</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Placeholder: รูป/วิดีโอจากการทำงาน -->
             <div class="media-placeholder">
                 <div class="media-placeholder-icon">&#128248;</div>
-                <div class="media-placeholder-text">ใส่รูปภาพหรือคลิปจากการทำงานตำแหน่งต่างๆ</div>
+                <div class="media-placeholder-text" data-th="ใส่รูปภาพหรือคลิปจากการทำงานตำแหน่งต่างๆ" data-en="Add photos or clips from your various roles">ใส่รูปภาพหรือคลิปจากการทำงานตำแหน่งต่างๆ</div>
                 <div class="media-placeholder-label">WORK GALLERY PLACEHOLDER</div>
             </div>
         </section>
 
-        <!-- ==================== CHAPTER 4: SKILLS / ARSENAL ==================== -->
-        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+        <!-- ==================== CH.4 SHOWREEL ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">&#9830; &#9830; &#9830;</span></div>
 
-        <section class="chapter" id="skills">
+        <section class="chapter" id="showreel">
             <div class="chapter-header">
                 <div class="chapter-label">Chapter 04</div>
-                <h2 class="chapter-title">Arsenal</h2>
-                <p class="chapter-subtitle">"อาวุธประจำกายที่สะสมมาตลอดชีวิต"</p>
+                <h2 class="chapter-title">Showreel</h2>
+                <p class="chapter-subtitle" data-th="&ldquo;ดูผลงานจริงดีกว่าอ่าน&rdquo;" data-en="&ldquo;Seeing is believing&rdquo;">&ldquo;ดูผลงานจริงดีกว่าอ่าน&rdquo;</p>
                 <div class="divider"></div>
             </div>
 
             <div class="story-text">
-                <p>ผมเชื่อว่าทักษะที่ดีที่สุดไม่ได้มาจากห้องเรียน แต่มาจากสนามจริง ทุกงานที่ผ่านมาให้อาวุธผมคนละชิ้น จนวันนี้ผมมีคลังอาวุธที่พร้อมใช้งานในทุกสถานการณ์</p>
+                <p data-th="มาดูผลงานจริงของผมกันดีกว่าครับ คลิปนี้เป็นตัวอย่างงาน Content ที่ผมทำ ตั้งแต่คิด วางแผน ถ่าย ตัดต่อ ครบจบในคนเดียว!" data-en="Let me show you my actual work! This clip is an example of content I created &mdash; from concept to planning to shooting to editing, all done by yours truly!">มาดูผลงานจริงของผมกันดีกว่าครับ คลิปนี้เป็นตัวอย่างงาน Content ที่ผมทำ ตั้งแต่คิด วางแผน ถ่าย ตัดต่อ ครบจบในคนเดียว!</p>
+            </div>
+
+            <!-- Vimeo Video Embed (vertical 9:16) -->
+            <div class="media-video-wrapper vertical">
+                <iframe src="https://player.vimeo.com/video/1183431295?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="Blvcksheep_1" loading="lazy"></iframe>
+            </div>
+
+            <div class="fun-note" data-emoji="&#127909;" data-th="สนใจให้ผมทำคอนเทนต์ให้? ติดต่อผมได้เลยครับ ราคาเป็นมิตร ฝีมือเป็นมืออาชีพ!" data-en="Want me to create content for you? Hit me up! Friendly prices, professional quality!">สนใจให้ผมทำคอนเทนต์ให้? ติดต่อผมได้เลยครับ ราคาเป็นมิตร ฝีมือเป็นมืออาชีพ!</div>
+
+            <!-- More video placeholders -->
+            <div class="media-placeholder">
+                <div class="media-placeholder-icon">&#127916;</div>
+                <div class="media-placeholder-text" data-th="ใส่คลิปผลงานเพิ่มเติม" data-en="Add more video clips here">ใส่คลิปผลงานเพิ่มเติม</div>
+                <div class="media-placeholder-label">MORE VIDEOS PLACEHOLDER</div>
+            </div>
+        </section>
+
+        <!-- ==================== CH.5 SKILLS ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">&#9830; &#9830; &#9830;</span></div>
+
+        <section class="chapter" id="skills">
+            <div class="chapter-header">
+                <div class="chapter-label">Chapter 05</div>
+                <h2 class="chapter-title">Arsenal</h2>
+                <p class="chapter-subtitle" data-th="&ldquo;อาวุธประจำกายที่สะสมมาตลอดชีวิต&rdquo;" data-en="&ldquo;Weapons collected throughout a lifetime of battles&rdquo;">&ldquo;อาวุธประจำกายที่สะสมมาตลอดชีวิต&rdquo;</p>
+                <div class="divider"></div>
+            </div>
+
+            <div class="story-text">
+                <p data-th="ผมเชื่อว่าทักษะที่ดีที่สุดไม่ได้มาจากห้องเรียน แต่มาจากสนามจริง ทุกงานที่ผ่านมาให้อาวุธผมคนละชิ้น จนวันนี้ผมมีคลังอาวุธที่พร้อมใช้งานในทุกสถานการณ์" data-en="I believe the best skills don't come from classrooms but from real battlefields. Every job gave me a new weapon, and today I have an arsenal ready for any situation.">ผมเชื่อว่าทักษะที่ดีที่สุดไม่ได้มาจากห้องเรียน แต่มาจากสนามจริง ทุกงานที่ผ่านมาให้อาวุธผมคนละชิ้น จนวันนี้ผมมีคลังอาวุธที่พร้อมใช้งานในทุกสถานการณ์</p>
             </div>
 
             <div class="skills-grid">
                 <div class="skill-card">
                     <div class="skill-card-icon">&#127908;</div>
                     <h4>Content Creation</h4>
-                    <p>คิด เขียน ถ่าย ตัดต่อ ครบจบในคนเดียว</p>
+                    <p data-th="คิด เขียน ถ่าย ตัดต่อ ครบจบในคนเดียว" data-en="Ideate, write, shoot, edit &mdash; one-stop shop">คิด เขียน ถ่าย ตัดต่อ ครบจบในคนเดียว</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#127916;</div>
                     <h4>Video Editing (CapCut)</h4>
-                    <p>ตัดต่อวิดีโอให้โดนใจ ตรงบรีฟ</p>
+                    <p data-th="ตัดต่อวิดีโอให้โดนใจ ตรงบรีฟ" data-en="Editing videos that hit the mark">ตัดต่อวิดีโอให้โดนใจ ตรงบรีฟ</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#127912;</div>
                     <h4>Graphic Design (Canva)</h4>
-                    <p>ออกแบบกราฟฟิคสวยงาม ดึงดูดสายตา</p>
+                    <p data-th="ออกแบบกราฟฟิคสวยงาม ดึงดูดสายตา" data-en="Eye-catching graphic design">ออกแบบกราฟฟิคสวยงาม ดึงดูดสายตา</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#128200;</div>
                     <h4>Data Analysis & Power BI</h4>
-                    <p>วิเคราะห์ข้อมูลยอดขาย แปลงตัวเลขเป็นกลยุทธ์</p>
+                    <p data-th="วิเคราะห์ข้อมูลยอดขาย แปลงตัวเลขเป็นกลยุทธ์" data-en="Turning numbers into actionable strategy">วิเคราะห์ข้อมูลยอดขาย แปลงตัวเลขเป็นกลยุทธ์</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#128188;</div>
                     <h4>Sales & Management</h4>
-                    <p>การปิดการขาย บริหารทีม บริหารยอด 8-20 ล้าน/เดือน</p>
+                    <p data-th="การปิดการขาย บริหารทีม บริหารยอด 8-20 ล้าน/เดือน" data-en="Closing deals, leading teams, 8-20M THB/month">การปิดการขาย บริหารทีม บริหารยอด 8-20 ล้าน/เดือน</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#128187;</div>
                     <h4>Microsoft Office</h4>
-                    <p>ใช้งานได้คล่องทุกโปรแกรมในชุด Office</p>
+                    <p data-th="ใช้งานได้คล่องทุกโปรแกรมในชุด Office" data-en="Proficient across the entire Office suite">ใช้งานได้คล่องทุกโปรแกรมในชุด Office</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#129302;</div>
                     <h4>AI & Vibe Coding</h4>
-                    <p>ใช้ AI ต่างๆ เพิ่มประสิทธิภาพ รวมถึง Vibe Coding สร้างโปรเจกต์ด้วย AI</p>
+                    <p data-th="ใช้ AI ต่างๆ เพิ่มประสิทธิภาพ รวมถึง Vibe Coding สร้างโปรเจกต์ด้วย AI" data-en="Leveraging AI tools &amp; Vibe Coding to build projects">ใช้ AI ต่างๆ เพิ่มประสิทธิภาพ รวมถึง Vibe Coding สร้างโปรเจกต์ด้วย AI</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#127911;</div>
                     <h4>Presentation & Storytelling</h4>
-                    <p>ทำสไลด์และนำเสนอได้ เล่าเรื่องให้คนฟัง</p>
+                    <p data-th="ทำสไลด์และนำเสนอได้ เล่าเรื่องให้คนฟัง" data-en="Crafting slides and captivating audiences">ทำสไลด์และนำเสนอได้ เล่าเรื่องให้คนฟัง</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#128736;</div>
                     <h4>ERP System</h4>
-                    <p>ดูแลและใช้งานระบบ ERP ในการบริหารจัดการองค์กร</p>
+                    <p data-th="ดูแลและใช้งานระบบ ERP ในการบริหารจัดการองค์กร" data-en="Managing ERP systems for business operations">ดูแลและใช้งานระบบ ERP ในการบริหารจัดการองค์กร</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#127926;</div>
                     <h4>DAW & Music Production</h4>
-                    <p>ใช้โปรแกรม DAW ผลิตเพลงและจัดการเสียง</p>
+                    <p data-th="ใช้โปรแกรม DAW ผลิตเพลงและจัดการเสียง" data-en="Music production and audio engineering with DAW">ใช้โปรแกรม DAW ผลิตเพลงและจัดการเสียง</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#128202;</div>
                     <h4>Product Marketing</h4>
-                    <p>Forecast สินค้า ตั้งราคา วิเคราะห์ตลาด หาช่องทางขาย</p>
+                    <p data-th="Forecast สินค้า ตั้งราคา วิเคราะห์ตลาด หาช่องทางขาย" data-en="Product forecasting, pricing, market analysis, channel strategy">Forecast สินค้า ตั้งราคา วิเคราะห์ตลาด หาช่องทางขาย</p>
                 </div>
                 <div class="skill-card">
                     <div class="skill-card-icon">&#127860;</div>
-                    <h4>Cooking & Recipe Dev</h4>
-                    <p>ทำอาหาร คิดค้นสูตรอาหาร (ทักษะลับที่ได้ใจทุกคน)</p>
+                    <h4 data-th="Cooking & Recipe Dev" data-en="Cooking & Recipe Dev">Cooking & Recipe Dev</h4>
+                    <p data-th="ทำอาหาร คิดค้นสูตรอาหาร (ทักษะลับที่ได้ใจทุกคน)" data-en="Cooking &amp; recipe development (the secret skill that wins everyone over)">ทำอาหาร คิดค้นสูตรอาหาร (ทักษะลับที่ได้ใจทุกคน)</p>
                 </div>
             </div>
 
-            <div class="highlight-quote">
-                "ภาษาไทย ระดับดีมาก (ทั้งพูด อ่าน เขียน) / ภาษาอังกฤษ ระดับพอสื่อสารได้ (กำลังพัฒนา!)"
-            </div>
+            <div class="highlight-quote" data-th="&ldquo;ภาษาไทย ระดับดีมาก (ทั้งพูด อ่าน เขียน) / ภาษาอังกฤษ ระดับพอสื่อสารได้ (กำลังพัฒนา!)&rdquo;" data-en="&ldquo;Thai: Excellent (speaking, reading, writing) / English: Conversational (and improving!)&rdquo;">&ldquo;ภาษาไทย ระดับดีมาก (ทั้งพูด อ่าน เขียน) / ภาษาอังกฤษ ระดับพอสื่อสารได้ (กำลังพัฒนา!)&rdquo;</div>
         </section>
 
-        <!-- ==================== CHAPTER 5: GALLERY ==================== -->
-        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+        <!-- ==================== CH.6 GALLERY ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">&#9830; &#9830; &#9830;</span></div>
 
         <section class="chapter" id="gallery">
             <div class="chapter-header">
-                <div class="chapter-label">Chapter 05</div>
+                <div class="chapter-label">Chapter 06</div>
                 <h2 class="chapter-title">Gallery</h2>
-                <p class="chapter-subtitle">"รูปภาพและผลงานที่ภูมิใจ"</p>
+                <p class="chapter-subtitle" data-th="&ldquo;รูปภาพและผลงานที่ภูมิใจ&rdquo;" data-en="&ldquo;Photos and proud moments&rdquo;">&ldquo;รูปภาพและผลงานที่ภูมิใจ&rdquo;</p>
                 <div class="divider"></div>
             </div>
 
             <div class="story-text">
-                <p>นี่คือรวมผลงานและช่วงเวลาที่น่าจดจำของผม ทั้งงานคอนเทนต์ ชีวิตการทำงาน และโมเมนต์ที่ทำให้ผมเป็นผมในทุกวันนี้</p>
+                <p data-th="นี่คือรวมผลงานและช่วงเวลาที่น่าจดจำของผม ทั้งงานคอนเทนต์ ชีวิตการทำงาน และโมเมนต์ที่ทำให้ผมเป็นผมในทุกวันนี้" data-en="Here are some of my proudest moments &mdash; from content work to career highlights, and everything that made me who I am today.">นี่คือรวมผลงานและช่วงเวลาที่น่าจดจำของผม ทั้งงานคอนเทนต์ ชีวิตการทำงาน และโมเมนต์ที่ทำให้ผมเป็นผมในทุกวันนี้</p>
             </div>
 
-            <!-- Gallery Grid with Placeholders -->
             <div class="gallery-grid">
-                <div class="gallery-item">
-                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 1</span>
-                </div>
-                <div class="gallery-item">
-                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 2</span>
-                </div>
-                <div class="gallery-item">
-                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 3</span>
-                </div>
-                <div class="gallery-item">
-                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 4</span>
-                </div>
-                <div class="gallery-item">
-                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 5</span>
-                </div>
-                <div class="gallery-item">
-                    <span style="color:rgba(245,240,235,0.3); font-size:0.8rem;">รูปภาพ 6</span>
-                </div>
+                <div class="gallery-item"><span style="color:rgba(245,240,235,0.3);font-size:0.8rem;">&#128247; 1</span></div>
+                <div class="gallery-item"><span style="color:rgba(245,240,235,0.3);font-size:0.8rem;">&#128247; 2</span></div>
+                <div class="gallery-item"><span style="color:rgba(245,240,235,0.3);font-size:0.8rem;">&#128247; 3</span></div>
+                <div class="gallery-item"><span style="color:rgba(245,240,235,0.3);font-size:0.8rem;">&#128247; 4</span></div>
+                <div class="gallery-item"><span style="color:rgba(245,240,235,0.3);font-size:0.8rem;">&#128247; 5</span></div>
+                <div class="gallery-item"><span style="color:rgba(245,240,235,0.3);font-size:0.8rem;">&#128247; 6</span></div>
             </div>
-            <!--
-                วิธีใส่รูปใน Gallery:
-                <div class="gallery-item">
-                    <img src="images/work-01.jpg" alt="ผลงาน 1" loading="lazy">
-                </div>
-            -->
 
-            <!-- Placeholder: วิดีโอ Showreel -->
             <div class="media-placeholder">
                 <div class="media-placeholder-icon">&#127916;</div>
-                <div class="media-placeholder-text">ใส่ Showreel หรือคลิปรวมผลงานของคุณ</div>
+                <div class="media-placeholder-text" data-th="ใส่ Showreel หรือคลิปรวมผลงาน" data-en="Add your showreel or compilation clip">ใส่ Showreel หรือคลิปรวมผลงาน</div>
                 <div class="media-placeholder-label">VIDEO SHOWREEL PLACEHOLDER</div>
             </div>
-            <!--
-                วิธีใส่วิดีโอ:
-                <div class="media-video-wrapper">
-                    <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen loading="lazy"></iframe>
-                </div>
-            -->
         </section>
 
-        <!-- ==================== CHAPTER 6: CONTACT ==================== -->
-        <div class="page-turn"><span class="page-turn-icon">* * *</span></div>
+        <!-- ==================== CH.7 CONTACT ==================== -->
+        <div class="page-turn"><span class="page-turn-icon">&#9830; &#9830; &#9830;</span></div>
 
         <section class="chapter" id="contact">
             <div class="chapter-header">
-                <div class="chapter-label">Chapter 06</div>
+                <div class="chapter-label">Chapter 07</div>
                 <h2 class="chapter-title">Get In Touch</h2>
-                <p class="chapter-subtitle">"ถ้าเรื่องราวของผมทำให้คุณสนใจ มาคุยกันได้เลยครับ"</p>
+                <p class="chapter-subtitle" data-th="&ldquo;ถ้าเรื่องราวของผมทำให้คุณสนใจ มาคุยกันได้เลยครับ&rdquo;" data-en="&ldquo;If my story caught your attention, let's chat!&rdquo;">&ldquo;ถ้าเรื่องราวของผมทำให้คุณสนใจ มาคุยกันได้เลยครับ&rdquo;</p>
                 <div class="divider"></div>
             </div>
 
             <div class="story-text">
-                <p>ผมพร้อมที่จะเรียนรู้และเติบโตในทีมที่มีความสนุกสนาน มีเป้าหมายเดียวกัน และกล้าคิดกล้าทำสิ่งใหม่ๆ ไปด้วยกัน ถ้าคุณกำลังมองหาคนที่มีพลัง สร้างสรรค์ และไม่กลัวความท้าทาย ผมอยู่ตรงนี้ครับ</p>
+                <p data-th="ผมพร้อมที่จะเรียนรู้และเติบโตในทีมที่มีความสนุกสนาน มีเป้าหมายเดียวกัน และกล้าคิดกล้าทำสิ่งใหม่ๆ ไปด้วยกัน ถ้าคุณกำลังมองหาคนที่มีพลัง สร้างสรรค์ และไม่กลัวความท้าทาย ผมอยู่ตรงนี้ครับ" data-en="I'm ready to learn and grow with a fun team that shares the same goals and isn't afraid to try new things. If you're looking for someone energetic, creative, and unafraid of challenges &mdash; I'm right here.">ผมพร้อมที่จะเรียนรู้และเติบโตในทีมที่มีความสนุกสนาน มีเป้าหมายเดียวกัน และกล้าคิดกล้าทำสิ่งใหม่ๆ ไปด้วยกัน ถ้าคุณกำลังมองหาคนที่มีพลัง สร้างสรรค์ และไม่กลัวความท้าทาย ผมอยู่ตรงนี้ครับ</p>
             </div>
 
             <div class="contact-links">
@@ -1227,29 +1229,23 @@
                     <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                     kengdekphi7@gmail.com
                 </a>
-                <!-- TODO: เพิ่มลิงก์ Social Media อื่นๆ -->
                 <!--
                 <a href="https://www.facebook.com/YOUR_PROFILE" class="contact-link" target="_blank" rel="noopener noreferrer">
                     <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3V2z"/></svg>
                     Facebook
                 </a>
-                <a href="https://line.me/ti/p/YOUR_LINE_ID" class="contact-link" target="_blank" rel="noopener noreferrer">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 5.89 2 10.54c0 3.45 2.61 6.43 6.37 7.56.24.06.57.17.65.39.08.2.05.5.02.7l-.1.61c-.03.18-.14.72.63.39s7.18-4.23 9.8-7.24C21.45 14.2 22 12.41 22 10.54 22 5.89 17.52 2 12 2z"/></svg>
-                    LINE
-                </a>
                 -->
             </div>
 
-            <div class="highlight-quote">
-                "ผมเชื่อว่าจุดเริ่มต้นที่ดี คือการได้คุยกัน<br>ไม่ว่าจะเป็นเรื่องงาน เรื่องไอเดีย หรือแค่อยากแลกเปลี่ยนมุมมอง<br>ผมยินดีเสมอครับ"
-            </div>
+            <div class="highlight-quote" data-th="&ldquo;ผมเชื่อว่าจุดเริ่มต้นที่ดี คือการได้คุยกัน ไม่ว่าจะเป็นเรื่องงาน เรื่องไอเดีย หรือแค่อยากแลกเปลี่ยนมุมมอง ผมยินดีเสมอครับ&rdquo;" data-en="&ldquo;I believe every great beginning starts with a conversation. Whether it's about work, ideas, or just exchanging perspectives &mdash; I'm always happy to chat.&rdquo;">&ldquo;ผมเชื่อว่าจุดเริ่มต้นที่ดี คือการได้คุยกัน ไม่ว่าจะเป็นเรื่องงาน เรื่องไอเดีย หรือแค่อยากแลกเปลี่ยนมุมมอง ผมยินดีเสมอครับ&rdquo;</div>
         </section>
 
         <!-- ==================== FOOTER ==================== -->
         <footer class="book-footer">
-            <div class="footer-end">&#8212; THE END &#8212;</div>
-            <p>...or maybe it's just the beginning of a new chapter.</p>
-            <p style="margin-top: 1rem;">&copy; 2026 Keng Playthong. All rights reserved.</p>
+            <div class="footer-wink">&#128075;</div>
+            <div class="footer-end">&mdash; THE END &mdash;</div>
+            <p data-th="...หรือบางทีมันอาจเป็นแค่จุดเริ่มต้นของบทใหม่" data-en="...or maybe it's just the beginning of a new chapter.">...หรือบางทีมันอาจเป็นแค่จุดเริ่มต้นของบทใหม่</p>
+            <p style="margin-top:1rem;">&copy; 2026 Keng Playthong. All rights reserved.</p>
         </footer>
 
     </main>
@@ -1258,39 +1254,67 @@
         (function() {
             'use strict';
 
-            // === Menu Toggle ===
-            const menuToggle = document.getElementById('menuToggle');
-            const bookNav = document.getElementById('bookNav');
-            const navOverlay = document.getElementById('navOverlay');
+            // === Elements ===
+            var menuToggle = document.getElementById('menuToggle');
+            var bookNav = document.getElementById('bookNav');
+            var navOverlay = document.getElementById('navOverlay');
+            var navCloseBtn = document.getElementById('navCloseBtn');
+            var langToggle = document.getElementById('langToggle');
+            var langFlag = document.getElementById('langFlag');
+            var langLabel = document.getElementById('langLabel');
+            var progressBar = document.getElementById('readingProgress');
 
+            var currentLang = 'th';
+
+            // === Menu ===
             function openMenu() {
                 bookNav.classList.add('open');
                 navOverlay.classList.add('show');
+                menuToggle.classList.add('hidden');
             }
 
             function closeMenu() {
                 bookNav.classList.remove('open');
                 navOverlay.classList.remove('show');
+                menuToggle.classList.remove('hidden');
             }
 
-            menuToggle.addEventListener('click', function() {
-                if (bookNav.classList.contains('open')) {
-                    closeMenu();
-                } else {
-                    openMenu();
-                }
-            });
-
+            menuToggle.addEventListener('click', openMenu);
             navOverlay.addEventListener('click', closeMenu);
+            navCloseBtn.addEventListener('click', closeMenu);
 
-            // Close menu on nav link click
             document.querySelectorAll('.chapter-list a').forEach(function(link) {
                 link.addEventListener('click', closeMenu);
             });
 
-            // === Reading Progress Bar ===
-            const progressBar = document.getElementById('readingProgress');
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeMenu();
+            });
 
+            // === Language Toggle ===
+            langToggle.addEventListener('click', function() {
+                currentLang = currentLang === 'th' ? 'en' : 'th';
+
+                // Update button
+                if (currentLang === 'th') {
+                    langFlag.textContent = 'TH';
+                    langLabel.textContent = 'EN';
+                } else {
+                    langFlag.textContent = 'EN';
+                    langLabel.textContent = 'TH';
+                }
+
+                // Update all translatable elements
+                document.querySelectorAll('[data-th][data-en]').forEach(function(el) {
+                    var text = el.getAttribute('data-' + currentLang);
+                    if (text) el.innerHTML = text;
+                });
+
+                // Update html lang
+                document.documentElement.lang = currentLang === 'th' ? 'th' : 'en';
+            });
+
+            // === Reading Progress ===
             function updateProgress() {
                 var scrollTop = window.scrollY;
                 var docHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -1298,7 +1322,7 @@
                 progressBar.style.width = progress + '%';
             }
 
-            // === Scroll Animations (Intersection Observer) ===
+            // === Scroll Animations ===
             var animTargets = document.querySelectorAll('.chapter-header, .story-text, .timeline-item, .skill-card');
 
             var observer = new IntersectionObserver(function(entries) {
@@ -1307,39 +1331,30 @@
                         entry.target.classList.add('visible');
                     }
                 });
-            }, {
-                threshold: 0.15,
-                rootMargin: '0px 0px -50px 0px'
-            });
+            }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
 
-            animTargets.forEach(function(el) {
-                observer.observe(el);
-            });
+            animTargets.forEach(function(el) { observer.observe(el); });
 
-            // === Active Nav Link Highlighting ===
+            // === Active Nav ===
             var sections = document.querySelectorAll('section[id]');
             var navLinks = document.querySelectorAll('.chapter-list a');
 
             function updateActiveNav() {
                 var scrollPos = window.scrollY + window.innerHeight / 3;
-
                 sections.forEach(function(section) {
                     var top = section.offsetTop;
                     var height = section.offsetHeight;
                     var id = section.getAttribute('id');
-
                     if (scrollPos >= top && scrollPos < top + height) {
                         navLinks.forEach(function(link) {
                             link.classList.remove('active');
-                            if (link.getAttribute('href') === '#' + id) {
-                                link.classList.add('active');
-                            }
+                            if (link.getAttribute('href') === '#' + id) link.classList.add('active');
                         });
                     }
                 });
             }
 
-            // Throttled scroll handler
+            // Throttled scroll
             var ticking = false;
             window.addEventListener('scroll', function() {
                 if (!ticking) {
@@ -1352,14 +1367,8 @@
                 }
             }, { passive: true });
 
-            // Initial calls
             updateProgress();
             updateActiveNav();
-
-            // === Keyboard Navigation ===
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') closeMenu();
-            });
         })();
     </script>
 </body>
